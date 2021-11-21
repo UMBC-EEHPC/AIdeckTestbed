@@ -16,7 +16,11 @@ PREFIX="$DIR/Local"
 
 MAKE=make
 MD5SUM=md5sum
+if [ "$(uname)" = "Darwin" ]; then
+NPROC="sysctl -n hw.logicalcpu"
+else
 NPROC=nproc
+fi
 
 echo PREFIX is "$PREFIX"
 
@@ -58,7 +62,7 @@ if [ "$(uname)" = "Linux" ]; then
 ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-Linux-x86_64"
 ANACONDA_MD5SUM="1046c40a314ab2531e4c099741530ada"
 elif [ "$(uname)" = "Darwin" ]; then
-ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-MacOSX-x86_64.sh"
+ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-MacOSX-x86_64"
 ANACONDA_MD5SUM="50f20c90b8b5bfdc09759c09e32dce68"
 fi
 ANACONDA_PKG="${ANACONDA_NAME}.sh"
@@ -179,30 +183,32 @@ fi
 pushd "$DIR/Build/"
     unset PKG_CONFIG_LIBDIR # Just in case
 
-    pushd ${OPENOCD_NAME}
-        ./bootstrap
-        ./configure --program-prefix=gap8- \
-                                        --prefix="$PREFIX" \
-                                        --datarootdir="$PREFIX"/share/gap8-openocd \
-                                        || exit 1
-        echo "XXX build openocd"
-        "$MAKE" -j "$MAKEJOBS" || exit 1
-        echo "XXX install openocd"
-        "$MAKE" install || exit 1
+    if [ "$(uname)" = "Linux" ]; then
+        pushd ${OPENOCD_NAME}
+            ./bootstrap
+            ./configure --program-prefix=gap8- \
+                                            --prefix="$PREFIX" \
+                                            --datarootdir="$PREFIX"/share/gap8-openocd \
+                                            || exit 1
+            echo "XXX build openocd"
+            "$MAKE" -j "$MAKEJOBS" || exit 1
+            echo "XXX install openocd"
+            "$MAKE" install || exit 1
 
-        if [ "$(uname)" = "Linux" ]; then
+            
             sudo cp "$PREFIX"/share/gap8-openocd/openocd/contrib/60-openocd.rules /etc/udev/rules.d || exit 1
             sudo udevadm control --reload-rules && sudo udevadm trigger || exit 1
             sudo usermod -a -G dialout "$USER" || exit 1
-        fi
-    popd
-
+        popd
+    fi
+    
     pushd binutils
         "$DIR"/Tarballs/"$BINUTILS_NAME"/configure --target=$TARGET \
                                                 --prefix="$PREFIX" \
                                                 --disable-nls \
                                                 --without-isl \
                                                 --disable-werror \
+                                                --disable-gdb \
                                                 || exit 1
         if [ "$(uname)" = "Darwin" ]; then
             # under macOS generated makefiles are not resolving the "intl"
