@@ -1,3 +1,3 @@
 Sources += files(
-    'StackCanary.c'
+    'StackCanary.cpp'
 )

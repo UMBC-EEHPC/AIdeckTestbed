@@ -3,3 +3,4 @@ Toolchain/Build/**
 Toolchain/Local/**
 Toolchain/gap_sdk/**
 build/**
+.cache/**

@@ -1,13 +1,11 @@
+extern "C" {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wregister"
 #include <stdio.h>
 #include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include <pmsis.h>
-#ifdef __cplusplus
+#pragma GCC diagnostic pop
 }
-#endif
 
 /* All data transferred between peripherals and 
  * the processor must be stored in L2 memory:

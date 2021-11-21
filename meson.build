@@ -12,7 +12,7 @@ project(
         'cpp_eh=none',
         'debug=true',
         'c_std=gnu99',
-        'cpp_std=c++17'
+        'cpp_std=gnu++17'
     ],
     meson_version : '>=0.59.0'
 )
@@ -110,7 +110,7 @@ Linker_Scripts = files(
 )
 
 Sources = files(
-    'hello.c',
+    'hello.cpp',
     GAP_SDK_Location / 'rtos/pulp/pulp-os/kernel/conf.c'
 )
 
