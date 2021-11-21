@@ -1,0 +1,32 @@
+diff --git a/riscv.ld b/riscv.ld
+index 5bd7712..3f8bd1d 100644
+--- a/riscv.ld
++++ b/riscv.ld
+@@ -1,3 +1,8 @@
++/*
++Had to include the PULP RISCV.ld in this repo because of this issue
++https://github.com/riscv-collab/riscv-gnu-toolchain/issues/685
++*/
++
+ /*======================================================================*/
+ /* Default maven linker script                                          */
+ /*======================================================================*/
+@@ -179,9 +184,9 @@ SECTIONS
+   PROVIDE( edata = . );
+   _edata = .;
+ 
+-  /* Have _gp point to middle of sdata/sbss to maximize displacement range */
++  /* Have __global_pointer$ point to middle of sdata/sbss to maximize displacement range */
+   . = ALIGN(16);
+-  _gp = . + 0x800;
++  __global_pointer$ = . + 0x800;
+ 
+   /* Writable small data segment */
+   .sdata : 
+@@ -222,4 +227,4 @@ SECTIONS
+   /* End of uninitialized data segment (used by syscalls.c for heap) */
+   PROVIDE( end = . );
+   _end = ALIGN(8);
+-}
++}
+\ No newline at end of file
