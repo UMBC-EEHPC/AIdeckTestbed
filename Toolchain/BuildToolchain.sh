@@ -68,7 +68,7 @@ fi
 ANACONDA_PKG="${ANACONDA_NAME}.sh"
 ANACONDA_BASE_URL="https://repo.anaconda.com/archive"
 
-GAP_SDK_CHKSUM="092a315287a149cf2280f8f47470c44e511f2090"
+GAP_SDK_TAG_NAME="release-v3.8.1"
 
 # === DOWNLOAD AND PATCH ===
 
@@ -313,7 +313,7 @@ cp "$DIR"/Tarballs/"$PULP_RISCV_GNU_TOOLCHAIN_NAME"/riscv.ld "$PREFIX"/riscv32-u
 echo "XXX install nntools requirements"
 git clone https://github.com/GreenWaves-Technologies/gap_sdk.git
 pushd "$DIR/gap_sdk"
-    git checkout "$GAP_SDK_CHKSUM"
+    git checkout -f "$GAP_SDK_TAG_NAME"
     
     source configs/ai_deck.sh
 
