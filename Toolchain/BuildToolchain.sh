@@ -183,24 +183,21 @@ fi
 pushd "$DIR/Build/"
     unset PKG_CONFIG_LIBDIR # Just in case
 
-    if [ "$(uname)" = "Linux" ]; then
-        pushd ${OPENOCD_NAME}
-            ./bootstrap
-            ./configure --program-prefix=gap8- \
-                                            --prefix="$PREFIX" \
-                                            --datarootdir="$PREFIX"/share/gap8-openocd \
-                                            || exit 1
-            echo "XXX build openocd"
-            "$MAKE" -j "$MAKEJOBS" || exit 1
-            echo "XXX install openocd"
-            "$MAKE" install || exit 1
+    pushd ${OPENOCD_NAME}
+        ./bootstrap
+        ./configure --program-prefix=gap8- \
+                                        --prefix="$PREFIX" \
+                                        --datarootdir="$PREFIX"/share/gap8-openocd \
+                                        || exit 1
+        echo "XXX build openocd"
+        "$MAKE" -j "$MAKEJOBS" || exit 1
+        echo "XXX install openocd"
+        "$MAKE" install || exit 1
 
-            
-            sudo cp "$PREFIX"/share/gap8-openocd/openocd/contrib/60-openocd.rules /etc/udev/rules.d || exit 1
-            sudo udevadm control --reload-rules && sudo udevadm trigger || exit 1
-            sudo usermod -a -G dialout "$USER" || exit 1
-        popd
-    fi
+        sudo cp "$PREFIX"/share/gap8-openocd/openocd/contrib/60-openocd.rules /etc/udev/rules.d || exit 1
+        sudo udevadm control --reload-rules && sudo udevadm trigger || exit 1
+        sudo usermod -a -G dialout "$USER" || exit 1
+    popd
     
     pushd binutils
         "$DIR"/Tarballs/"$BINUTILS_NAME"/configure --target=$TARGET \
