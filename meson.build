@@ -1,5 +1,5 @@
 project(
-    'AIDeckTestBed', 
+    'AIdeckTestbed', 
     'c', 
     'cpp',
     version : '1.0',
@@ -103,6 +103,10 @@ Lib_stdcpp = C_Compiler.find_library(
     'stdc++',
     required: true
 )
+Lib_c = C_Compiler.find_library(
+    'c',
+    required: true
+)
 
 Linker_Scripts = files(
     GAP_SDK_Location / 'install/workstation/ld/link.gap8_rev1.ld',
@@ -115,10 +119,9 @@ Sources = files(
 )
 
 Prog_size = find_program('riscv32-unknown-elf-size')
-Prog_objdump = find_program('riscv32-unknown-elf-objdump')
-Prog_gvsoc = find_program('gapy')
 
 subdir('Core')
+subdir('Gapack')
 
 # compile the main executable
 Project_Binary = executable(
@@ -131,37 +134,33 @@ Project_Binary = executable(
         Lib_rt, 
         Lib_rtio, 
         Lib_gcc, 
-        Lib_stdcpp
+        Lib_stdcpp,
+        Lib_c
     ],
     include_directories: Includes
 )
 
-run_target('size',
-    command: [Prog_size, Project_Binary.full_path()],
+Target_size = run_target('size',
+    command: [
+        Prog_size, Project_Binary.full_path()
+    ],
     depends: Project_Binary
 )
 
-run_target('disassemble',
+Target_disassemble = run_target('disassemble',
     command: [
-        Prog_objdump,
-        '-d', 
-        '-h', 
-        '-S', 
-        '-t', 
-        '-w', 
-        '--show-raw-insn', 
+        'Scripts/disassemble.sh',
         Project_Binary.full_path(),
-        '>' ,
-        Project_Binary.full_path() + '.s'
+        meson.project_name()
     ],
     depends: Project_Binary
 )
 
-'''
-run_target('gvsoc',
+Target_gvsoc = run_target('gvsoc',
     command: [
-        Prog_gvsoc
+        'Scripts/run_in_gvsoc.sh',
+        meson.project_build_root(),
+        meson.project_name()
     ],
-    depends: mainbin
+    depends: Project_Binary
 )
-'''
