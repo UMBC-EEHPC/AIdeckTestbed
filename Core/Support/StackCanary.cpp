@@ -1,10 +1,7 @@
-extern "C" {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wregister"
-#include <stdio.h>
+#include <Core/Support/gap_sdk.h>
 #include <stdint.h>
-#include <pmsis.h>
-#pragma GCC diagnostic pop
+
+extern "C" {
 
 extern const uintptr_t __stack_chk_guard = 0xccc0ffee;
 

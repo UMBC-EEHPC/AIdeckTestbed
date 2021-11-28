@@ -110,7 +110,7 @@ Linker_Scripts = files(
 )
 
 Sources = files(
-    'hello.cpp',
+    'Main.cpp',
     GAP_SDK_Location / 'rtos/pulp/pulp-os/kernel/conf.c'
 )
 
