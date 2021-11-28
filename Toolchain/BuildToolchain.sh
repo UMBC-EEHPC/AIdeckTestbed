@@ -68,7 +68,11 @@ fi
 ANACONDA_PKG="${ANACONDA_NAME}.sh"
 ANACONDA_BASE_URL="https://repo.anaconda.com/archive"
 
+GAP_SDK_BASE_URL="https://github.com/GreenWaves-Technologies/gap_sdk.git"
 GAP_SDK_TAG_NAME="release-v3.8.1"
+
+ETL_BASE_URL="https://github.com/ETLCPP/etl.git"
+ETL_TAG_NAME="20.20.0"
 
 # === DOWNLOAD AND PATCH ===
 
@@ -306,9 +310,14 @@ popd
 
 cp "$DIR"/Tarballs/"$PULP_RISCV_GNU_TOOLCHAIN_NAME"/riscv.ld "$PREFIX"/riscv32-unknown-elf/lib
 
+git clone "$ETL_BASE_URL"
+pushd "$DIR/etl"
+git checkout -f "$ETL_TAG_NAME"
+popd
+
 # === DOWNLOAD OFFICIAL SDK ===
 echo "XXX install nntools requirements"
-git clone https://github.com/GreenWaves-Technologies/gap_sdk.git
+git clone "$GAP_SDK_BASE_URL"
 pushd "$DIR/gap_sdk"
     git checkout -f "$GAP_SDK_TAG_NAME"
     

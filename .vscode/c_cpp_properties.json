@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "GAP8",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/**",
+                "${workspaceFolder}/Toolchain/etl/include/**"
+            ],
+            "defines": [
+                "PULP_CHIP_STR=gap"
+            ],
+            "compilerPath": "${workspaceFolder}/Toolchain/Local/bin/riscv32-unknown-elf-g++",
+            "cStandard": "c99",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-clang-x64",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+        }
+    ],
+    "version": 4
+}

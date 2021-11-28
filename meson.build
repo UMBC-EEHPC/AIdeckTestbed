@@ -18,6 +18,7 @@ project(
 )
 
 GAP_SDK_Location = 'Toolchain/gap_sdk'
+ETL_Location = 'Toolchain/etl/include'
 CXX_Compiler = meson.get_compiler('cpp')
 C_Compiler = meson.get_compiler('c')
 
@@ -51,6 +52,7 @@ add_project_arguments(
 )
 add_project_arguments(
     '-fpermissive',
+    '-fno-exceptions',
     language: 'cpp',
     native: false
 )
@@ -64,6 +66,7 @@ add_project_link_arguments(
   '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld',
   '-nostartfiles',
   '-nostdlib',
+  '-fno-exceptions',
   language: [
       'c',
       'cpp'
@@ -76,7 +79,8 @@ Includes = include_directories(
     GAP_SDK_Location / 'install/GAP8_V2/include',
     GAP_SDK_Location / 'install/GAP8_V2/include/io',
     GAP_SDK_Location / 'install/workstation/include',
-    GAP_SDK_Location / 'tools/autotiler_v3/Emulation'
+    GAP_SDK_Location / 'tools/autotiler_v3/Emulation',
+    ETL_Location
 )
 
 Lib_pibsp = C_Compiler.find_library(
@@ -97,14 +101,6 @@ Lib_rtio = C_Compiler.find_library(
 )
 Lib_gcc = C_Compiler.find_library(
     'gcc',
-    required: true
-)
-Lib_stdcpp = C_Compiler.find_library(
-    'stdc++',
-    required: true
-)
-Lib_c = C_Compiler.find_library(
-    'c',
     required: true
 )
 
@@ -133,9 +129,7 @@ Project_Binary = executable(
         Lib_pibsp, 
         Lib_rt, 
         Lib_rtio, 
-        Lib_gcc, 
-        Lib_stdcpp,
-        Lib_c
+        Lib_gcc
     ],
     include_directories: Includes
 )
