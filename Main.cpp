@@ -1,11 +1,14 @@
 #include <stdint.h>
 #include <Core/Support/gap_sdk.h>
 #include <Core/Heap/L2Heap.h>
+#include <Core/Heap/L1Heap.h>
 #include <Gapack/Matrix.h>
 
 void program_main() {
-	printf("Hello world!\n");
-	
+	volatile Core::Heap::L2Heap l2heap;
+	volatile Core::Heap::L1Heap l1heap;
+	Core::Serial::UART uart;
+
 	Core::Heap::L2Heap();
 	
 	Gapack::Matrix matrix({

@@ -13,7 +13,7 @@
             "compilerPath": "${workspaceFolder}/Toolchain/Local/bin/riscv32-unknown-elf-g++",
             "cStandard": "c99",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-clang-x64",
+            "intelliSenseMode": "linux-clang-x86",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }
     ],
