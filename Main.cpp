@@ -8,8 +8,6 @@ void program_main() {
 	volatile Core::Heap::L2Heap l2heap;
 	volatile Core::Heap::L1Heap l1heap;
 	Core::Serial::UART uart;
-
-	Core::Heap::L2Heap();
 	
 	Gapack::Matrix matrix({
 		{1, 2, 3},
@@ -17,6 +15,7 @@ void program_main() {
 		{7, 8, 9}
 	});
 	matrix.print();
+	printf("Finished execution\n");
 	pmsis_exit(0);
 }
 
