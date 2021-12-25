@@ -22,7 +22,7 @@ ETL_Location = 'Toolchain/etl/include'
 CXX_Compiler = meson.get_compiler('cpp')
 C_Compiler = meson.get_compiler('c')
 
-add_project_arguments(
+GAP8_C_Flags = [
     '-DCONFIG_FLL_MAXDCO_FREQ=900000000',
     '-fstack-protector-strong',
     '-DCONFIG_AI_DECK',
@@ -44,34 +44,25 @@ add_project_arguments(
     '-D__PULP_OS__',
     '-include',
     meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/include/rt/chips/gap_rev1/config.h',
-    language: [
-        'c', 
-        'cpp'
-    ],
-    native: false
-)
-add_project_arguments(
+]
+
+GAP8_CXX_Flags = [
+    GAP8_C_Flags,
     '-fpermissive',
+    '-fno-exceptions'
+]
+
+GAP8_Link_Flags = [
+    '-march=rv32imcxgap8',
+    '-mPE=8',
+    '-mFC=1',
+    '-Wl,--as-needed',
+    '-Wl,--gc-sections',
+    '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/link.gap8_rev1.ld',
+    '-nostartfiles',
+    '-nostdlib',
     '-fno-exceptions',
-    language: 'cpp',
-    native: false
-)
-add_project_link_arguments(
-  '-march=rv32imcxgap8',
-  '-mPE=8',
-  '-mFC=1',
-  '-Wl,--as-needed',
-  '-Wl,--gc-sections',
-  '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/link.gap8_rev1.ld',
-  '-nostartfiles',
-  '-nostdlib',
-  '-fno-exceptions',
-  language: [
-      'c',
-      'cpp'
-  ],
-  native: false
-)
+]
 
 Includes = include_directories(
     '.',
@@ -103,11 +94,6 @@ Lib_gcc = C_Compiler.find_library(
     required: true
 )
 
-Linker_Scripts = files(
-    GAP_SDK_Location / 'install/workstation/ld/link.gap8_rev1.ld',
-    GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
-)
-
 Sources = files(
     'Main.cpp',
     GAP_SDK_Location / 'gap8/rtos/pulp/pulp-os/kernel/conf.c'
@@ -131,14 +117,18 @@ Project_GVSOC_Binary = executable(
     ],
     include_directories: Includes,
     c_args: [
+        GAP8_C_Flags,
         '-D__PLATFORM_GVSOC__'
     ],
     cpp_args: [
+        GAP8_CXX_Flags,
         '-D__PLATFORM_GVSOC__'
     ],
     link_args: [
+        GAP8_Link_Flags,
         '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
-    ]
+    ],
+    native: false
 )
 
 Project_AIdeck_Binary = executable(
@@ -154,16 +144,20 @@ Project_AIdeck_Binary = executable(
     ],
     include_directories: Includes,
     c_args: [
+        GAP8_C_Flags,
         '-D__PLATFORM_BOARD__',
         '-D__RT_IODEV__=2'
     ],
     cpp_args: [
+        GAP8_CXX_Flags,
         '-D__PLATFORM_BOARD__',
         '-D__RT_IODEV__=2'
     ],
     link_args: [
+        GAP8_Link_Flags,
         '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gapuino.conf.ld'
-    ]
+    ],
+    native: false
 )
 
 Target_GVSOC_size = run_target('size_gvsoc',
