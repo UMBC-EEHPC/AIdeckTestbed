@@ -7,7 +7,7 @@
 void program_main() {
 	volatile Core::Heap::L2Heap l2heap;
 	volatile Core::Heap::L1Heap l1heap;
-	Core::Serial::UART uart;
+	Core::Device::Serial::UART uart;
 	
 	Gapack::Matrix matrix({
 		{1, 2, 3},

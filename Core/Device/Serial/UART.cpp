@@ -1,6 +1,6 @@
 #include "UART.h"
 
-namespace Core::Serial {
+namespace Core::Device::Serial {
     
 static PI_L1 UART* g_uart = nullptr;
 

@@ -1,0 +1,3 @@
+Sources += files(
+    'Camera.cpp'
+)

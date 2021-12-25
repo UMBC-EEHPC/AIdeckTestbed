@@ -12,7 +12,7 @@ extern int vsnprintf (char * s, size_t n, const char * format, va_list arg );
 
 }
 
-namespace Core::Serial {
+namespace Core::Device::Serial {
 
 class UART {
     public:

@@ -6,7 +6,7 @@
 #include <Core/Containers/HeapVector.h>
 #include <Core/Sync/Mutex.h>
 #include <Core/Sync/Spinlock.h>
-#include <Core/Serial/UART.h>
+#include <Core/Device/Serial/UART.h>
 #include <etl/vector.h>
 #include <etl/optional.h>
 #include <etl/algorithm.h>
