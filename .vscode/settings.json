@@ -73,5 +73,6 @@
         "Toolchain/Build": true,
         "Toolchain/Local": true,
         "Toolchain/Tarballs": true
-    }
+    },
+    "cmake.configureOnOpen": false
 }

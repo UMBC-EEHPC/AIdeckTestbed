@@ -14,7 +14,7 @@ project(
         'c_std=gnu99',
         'cpp_std=gnu++17'
     ],
-    meson_version : '>=0.59.0'
+    meson_version : '>=0.60.0'
 )
 
 GAP_SDK_Location = 'Toolchain/gap_sdk'
@@ -23,10 +23,10 @@ CXX_Compiler = meson.get_compiler('cpp')
 C_Compiler = meson.get_compiler('c')
 
 add_project_arguments(
+    '-DCONFIG_FLL_MAXDCO_FREQ=900000000',
     '-fstack-protector-strong',
     '-DCONFIG_AI_DECK',
     '-DRT_FC_STACK_SIZE=2048',
-    '-D__PLATFORM_GVSOC__',
     '-fno-jump-tables',
     '-fno-tree-loop-distribute-patterns',
     '-fdata-sections',
@@ -63,7 +63,6 @@ add_project_link_arguments(
   '-Wl,--as-needed',
   '-Wl,--gc-sections',
   '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/link.gap8_rev1.ld',
-  '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld',
   '-nostartfiles',
   '-nostdlib',
   '-fno-exceptions',
@@ -111,7 +110,7 @@ Linker_Scripts = files(
 
 Sources = files(
     'Main.cpp',
-    GAP_SDK_Location / 'rtos/pulp/pulp-os/kernel/conf.c'
+    GAP_SDK_Location / 'gap8/rtos/pulp/pulp-os/kernel/conf.c'
 )
 
 Prog_size = find_program('riscv32-unknown-elf-size')
@@ -119,8 +118,7 @@ Prog_size = find_program('riscv32-unknown-elf-size')
 subdir('Core')
 subdir('Gapack')
 
-# compile the main executable
-Project_Binary = executable(
+Project_GVSOC_Binary = executable(
     meson.project_name(),
     [
         Sources, 
@@ -131,23 +129,73 @@ Project_Binary = executable(
         Lib_rtio, 
         Lib_gcc
     ],
-    include_directories: Includes
-)
-
-Target_size = run_target('size',
-    command: [
-        Prog_size, Project_Binary.full_path()
+    include_directories: Includes,
+    c_args: [
+        '-D__PLATFORM_GVSOC__'
     ],
-    depends: Project_Binary
+    cpp_args: [
+        '-D__PLATFORM_GVSOC__'
+    ],
+    link_args: [
+        '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
+    ]
 )
 
-Target_disassemble = run_target('disassemble',
+Project_AIdeck_Binary = executable(
+    meson.project_name() + '-AIdeck',
+    [
+        Sources, 
+    ],
+    dependencies: [
+        Lib_pibsp, 
+        Lib_rt, 
+        Lib_rtio, 
+        Lib_gcc
+    ],
+    include_directories: Includes,
+    c_args: [
+        '-D__PLATFORM_BOARD__',
+        '-D__RT_IODEV__=2'
+    ],
+    cpp_args: [
+        '-D__PLATFORM_BOARD__',
+        '-D__RT_IODEV__=2'
+    ],
+    link_args: [
+        '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gapuino.conf.ld'
+    ]
+)
+
+Target_GVSOC_size = run_target('size_gvsoc',
+    command: [
+        Prog_size, Project_GVSOC_Binary.full_path()
+    ],
+    depends: Project_GVSOC_Binary
+)
+
+Target_AIdeck_size = run_target('size_aideck',
+    command: [
+        Prog_size, Project_AIdeck_Binary.full_path()
+    ],
+    depends: Project_AIdeck_Binary
+)
+
+Target_GVSOC_disassemble = run_target('disassemble_gvsoc',
     command: [
         'Scripts/disassemble.sh',
-        Project_Binary.full_path(),
+        Project_GVSOC_Binary.full_path(),
         meson.project_name()
     ],
-    depends: Project_Binary
+    depends: Project_GVSOC_Binary
+)
+
+Target_GVSOC_disassemble = run_target('disassemble_aideck',
+    command: [
+        'Scripts/disassemble.sh',
+        Project_AIdeck_Binary.full_path(),
+        meson.project_name()
+    ],
+    depends: Project_AIdeck_Binary
 )
 
 Target_gvsoc = run_target('gvsoc',
@@ -156,5 +204,5 @@ Target_gvsoc = run_target('gvsoc',
         meson.project_build_root(),
         meson.project_name()
     ],
-    depends: Project_Binary
+    depends: Project_GVSOC_Binary
 )

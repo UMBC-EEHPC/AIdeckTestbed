@@ -69,7 +69,7 @@ ANACONDA_PKG="${ANACONDA_NAME}.sh"
 ANACONDA_BASE_URL="https://repo.anaconda.com/archive"
 
 GAP_SDK_BASE_URL="https://github.com/GreenWaves-Technologies/gap_sdk.git"
-GAP_SDK_TAG_NAME="release-v3.8.1"
+GAP_SDK_TAG_NAME="release-v4.9.0"
 
 ETL_BASE_URL="https://github.com/ETLCPP/etl.git"
 ETL_TAG_NAME="20.20.0"
@@ -320,17 +320,17 @@ echo "XXX install nntools requirements"
 git clone "$GAP_SDK_BASE_URL"
 pushd "$DIR/gap_sdk"
     git checkout -f "$GAP_SDK_TAG_NAME"
+
+    export GAP_RISCV_GCC_TOOLCHAIN="$PREFIX"
     
     source configs/ai_deck.sh
 
-    pip install -r tools/nntool/requirements.txt
-    pip install -r requirements.txt
+    pip3 install -r requirements.txt
+    pip3 install -r doc/requirements.txt
 
     git submodule update --init --recursive
 
     echo "XXX build gap8 sdk"
-    make all PULP_RISCV_GCC_TOOLCHAIN="$PREFIX"
-
-    make install INSTALL_DIR="$PREFIX"
+    make sdk
 
 popd

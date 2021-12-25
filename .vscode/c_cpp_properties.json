@@ -5,6 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/**",
+                "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/io/**",
+                "${workspaceFolder}/Toolchain/gap_sdk/install/workstation/include/**",
                 "${workspaceFolder}/Toolchain/etl/include/**"
             ],
             "defines": [
