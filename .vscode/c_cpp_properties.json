@@ -10,7 +10,7 @@
                 "${workspaceFolder}/Toolchain/etl/include/**"
             ],
             "defines": [
-                "PULP_CHIP_STR=gap"
+                "PULP_CHIP_STR=gap8"
             ],
             "compilerPath": "${workspaceFolder}/Toolchain/Local/bin/riscv32-unknown-elf-g++",
             "cStandard": "c99",

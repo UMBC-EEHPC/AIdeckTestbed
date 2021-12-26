@@ -3,6 +3,8 @@
 #include <Core/Support/gap_sdk.h>
 #include <Core/Heap/L2Heap.h>
 #include <Core/Sync/Sync.h>
+#include <Core/Support/Singleton.h>
+#include <etl/optional.h>
 
 #define MAX_BUFFER_LEN 1000
 
@@ -12,20 +14,18 @@ extern int vsnprintf (char * s, size_t n, const char * format, va_list arg );
 
 }
 
-namespace Core::Device::Serial {
+namespace Core::Device {
 
 class UART {
+    SINGLETON_CLASS(UART)
     public:
-        UART();
-
         int write(char const* string, ...);
 
-        static UART& self();
         ~UART();
     private:
         char* m_buffer;
-        struct pi_device uart;
-        struct pi_uart_conf config;
+        pi_device m_uart;
+        pi_uart_conf m_config;
 };
 
 }

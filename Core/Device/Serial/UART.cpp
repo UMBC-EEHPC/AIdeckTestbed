@@ -1,28 +1,37 @@
 #include "UART.h"
 
-namespace Core::Device::Serial {
+using namespace etl;
+
+namespace Core::Device {
     
-static PI_L1 UART* g_uart = nullptr;
+static UART* g_uart = nullptr;
 
-UART::UART() {
-    assert_gap8(g_uart);
+[[nodiscard]] UART* UART::initialize() {
+    if (g_uart)
+        return nullptr;
 
-    pi_uart_conf_init(&config);
-
-    config.enable_tx = 1;
-	config.enable_rx = 0;
-    config.baudrate_bps = 9600;
+    if (!(g_uart = create_singleton_l2<UART>()))
+        return nullptr;
     
-    pi_open_from_conf(&uart, &config);
+    pi_uart_conf_init(&(g_uart->m_config));
 
-    if (pi_uart_open(&uart)) {
-		printf("Failed to open UART.\n");
-		pmsis_exit(-1);
-	}
+    g_uart->m_config.enable_tx = 1;
+	g_uart->m_config.enable_rx = 0;
+    g_uart->m_config.baudrate_bps = 9600;
+    
+    pi_open_from_conf(&(g_uart->m_uart), &(g_uart->m_config));
 
-    m_buffer = static_cast<char*>(Core::Heap::L2Heap::self().allocate(MAX_BUFFER_LEN));
+    if (!(g_uart->m_buffer = static_cast<char*>(Core::Heap::L2Heap::self().allocate(MAX_BUFFER_LEN))))
+        return nullptr;
 
-    g_uart = this;
+    if (pi_uart_open(&(g_uart->m_uart)))
+        return nullptr;
+
+    return g_uart;
+}
+
+UART& UART::self() { 
+    return *g_uart; 
 }
 
 int UART::write(char const* string, ...) {
@@ -36,18 +45,16 @@ int UART::write(char const* string, ...) {
     if (len < 0)
         return len;
     
-    if (pi_uart_write(&uart, m_buffer, len))
+    if (pi_uart_write(&m_uart, m_buffer, len))
         printf("\nFailed while writing %s:\n", m_buffer);
 
     return 0;
 }
 
-UART& UART::self() { 
-    return *g_uart; 
-}
-
 UART::~UART() {
-    pi_uart_close(&uart);
+    pi_uart_close(&m_uart);
+    Core::Heap::L2Heap::self().deallocate(g_uart, sizeof(UART));
+    g_uart = nullptr;
 }
 
 }

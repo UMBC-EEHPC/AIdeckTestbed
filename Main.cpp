@@ -7,7 +7,12 @@
 void program_main() {
 	volatile Core::Heap::L2Heap l2heap;
 	volatile Core::Heap::L1Heap l1heap;
-	Core::Device::Serial::UART uart;
+
+	auto* uart_or_error = Core::Device::UART::initialize();
+	if (!uart_or_error)
+		assert_not_reached_gap8();
+	auto& uart = *uart_or_error;
+	uart.write("Initialized UART\n");
 	
 	Gapack::Matrix matrix({
 		{1, 2, 3},
@@ -19,8 +24,6 @@ void program_main() {
 	pmsis_exit(0);
 }
 
-extern "C" {
 int main() {
 	return pmsis_kickoff((void*)program_main);
-}
 }
