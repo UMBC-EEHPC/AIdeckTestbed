@@ -333,4 +333,8 @@ pushd "$DIR/gap_sdk"
     echo "XXX build gap8 sdk"
     make sdk
 
+    pushd "$DIR/gap_sdk/libs/frame_streamer"
+        make all_target
+    popd
+
 popd

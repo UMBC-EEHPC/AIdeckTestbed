@@ -69,6 +69,7 @@ Includes = include_directories(
     GAP_SDK_Location / 'install/GAP8_V2/include',
     GAP_SDK_Location / 'install/GAP8_V2/include/io',
     GAP_SDK_Location / 'install/workstation/include',
+    GAP_SDK_Location / 'libs/frame_streamer/include',
     GAP_SDK_Location / 'tools/autotiler_v3/Emulation',
     ETL_Location
 )
@@ -87,6 +88,16 @@ Lib_rt = C_Compiler.find_library(
 Lib_rtio = C_Compiler.find_library(
     'librtio', 
     dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap', 
+    required: true
+)
+Lib_gaptools = C_Compiler.find_library(
+    'libgaptools',
+    dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap/ai_deck',
+    required: true
+)
+Lib_gaplib = C_Compiler.find_library(
+    'libgaplib',
+    dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap/ai_deck',
     required: true
 )
 Lib_gcc = C_Compiler.find_library(
@@ -113,6 +124,8 @@ Project_GVSOC_Binary = executable(
         Lib_pibsp, 
         Lib_rt, 
         Lib_rtio, 
+        Lib_gaplib,
+        Lib_gaptools,
         Lib_gcc
     ],
     include_directories: Includes,
@@ -139,7 +152,9 @@ Project_AIdeck_Binary = executable(
     dependencies: [
         Lib_pibsp, 
         Lib_rt, 
-        Lib_rtio, 
+        Lib_rtio,
+        Lib_gaplib,
+        Lib_gaptools, 
         Lib_gcc
     ],
     include_directories: Includes,
@@ -187,7 +202,7 @@ Target_GVSOC_disassemble = run_target('disassemble_aideck',
     command: [
         'Scripts/disassemble.sh',
         Project_AIdeck_Binary.full_path(),
-        meson.project_name()
+        meson.project_name() + '-AIdeck'
     ],
     depends: Project_AIdeck_Binary
 )
@@ -199,4 +214,13 @@ Target_gvsoc = run_target('gvsoc',
         meson.project_name()
     ],
     depends: Project_GVSOC_Binary
+)
+
+Target_gvsoc = run_target('aideck',
+    command: [
+        'Scripts/run_in_board.sh',
+        meson.project_build_root(),
+        meson.project_name() + '-AIdeck'
+    ],
+    depends: Project_AIdeck_Binary
 )
