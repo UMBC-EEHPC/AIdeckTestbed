@@ -35,7 +35,8 @@ class Matrix {
 
         template <class Function>
         void for_each_coeff(Function f) {
-            int y, x = 0;            
+            int y = 0; 
+            int x = 0;            
             etl::for_each(m_raw_matrix.begin(), m_raw_matrix.end(), [&](auto entry) {
                 f(y, x, entry);
                 x++;
