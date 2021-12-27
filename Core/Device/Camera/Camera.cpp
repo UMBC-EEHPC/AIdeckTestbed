@@ -15,13 +15,24 @@ static Camera* g_camera = nullptr;
 
     pi_himax_conf_init(&(g_camera->m_config));
 
-    g_camera->m_config.format = PI_CAMERA_QQVGA;
+    g_camera->m_config.format = PI_CAMERA_QVGA;
 
     pi_open_from_conf(&(g_camera->m_camera_device), &(g_camera->m_config));
     if (pi_camera_open(&(g_camera->m_camera_device)))
         return nullptr;
 
+    pi_camera_control(&(g_camera->m_camera_device), PI_CAMERA_CMD_START, 0);
+    
+    uint8_t set_value=3;
+    uint8_t reg_value;
+    
+    pi_camera_reg_set(&(g_camera->m_camera_device), IMG_ORIENTATION, &set_value);
+    pi_time_wait_us(1000000);
+    pi_camera_reg_get(&(g_camera->m_camera_device), IMG_ORIENTATION, &reg_value);
+    assert_gap8(set_value == reg_value);
+    
     pi_camera_control(&(g_camera->m_camera_device), PI_CAMERA_CMD_STOP, 0);
+    pi_camera_control(&(g_camera->m_camera_device), PI_CAMERA_CMD_AEG_INIT, 0);
 
     return g_camera;
 }
