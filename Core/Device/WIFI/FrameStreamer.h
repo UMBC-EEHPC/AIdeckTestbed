@@ -13,8 +13,6 @@ class FrameStreamer {
     public:
         bool send_frame(etl::vector_ext<char>& frame_data);
     private:
-        WIFI& m_wifi;
-        Camera& m_camera;
         frame_streamer_conf m_config;
         frame_streamer_t* m_frame_streamer_meta;
 };
