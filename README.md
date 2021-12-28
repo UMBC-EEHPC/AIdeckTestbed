@@ -11,6 +11,18 @@ The project is rather small as of right now but I hope to eventually grow this i
 
 ## Build
 
+The following packages are required:
+
+```bash
+sudo apt-get install autoconf automake bison build-essential cmake curl doxygen flex git gtkwave libftdi-dev libftdi1 libjpeg-dev libsdl2-dev libsdl2-ttf-dev libsndfile1-dev graphicsmagick-libmagick-dev-compat libtool libusb-1.0-0-dev pkg-config python3-pip rsync scons texinfo wget libmpfr-dev libmpc-dev libgmp-dev texinfo gcc-10 g++-10 ninja
+```
+
+The version of meson that ships with Ubuntu/Debian is out of date, thus, it's recommended to install it with:
+
+```bash
+sudo pip3 install meson
+```
+
 Building the toolchain and SDK is rather simple, only requiring these commands
 
 ```bash
