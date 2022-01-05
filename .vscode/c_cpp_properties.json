@@ -9,8 +9,8 @@
                 "${workspaceFolder}/Toolchain/gap_sdk/install/workstation/include/**",
                 "${workspaceFolder}/Toolchain/etl/include/**"
             ],
-            "defines": [
-                "PULP_CHIP_STR=gap8"
+            "forcedInclude": [
+                "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/rt/chips/gap_rev1/config.h"
             ],
             "compilerPath": "${workspaceFolder}/Toolchain/Local/bin/riscv32-unknown-elf-g++",
             "cStandard": "c99",
