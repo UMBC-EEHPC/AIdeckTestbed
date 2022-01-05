@@ -19,11 +19,23 @@ project(
 
 GAP_SDK_Location = 'Toolchain/gap_sdk'
 ETL_Location = 'Toolchain/etl/include'
-CXX_Compiler = meson.get_compiler('cpp')
-C_Compiler = meson.get_compiler('c')
+GAP8_CXX_Compiler = meson.get_compiler('cpp', native: false)
+GAP8_C_Compiler = meson.get_compiler('c', native: false)
+
+Native_CXX_Compiler = meson.get_compiler('cpp', native: true)
+Native_C_Compiler = meson.get_compiler('c', native: true)
 
 GAP8_C_Flags = [
     '-DCONFIG_FLL_MAXDCO_FREQ=900000000',
+    '-DUSE_HYPER',
+    '-DPERF',
+    '-DAT_MODEL_PREFIX=ptq_int8',
+    '-DAT_INPUT_HEIGHT=',
+    '-DAT_INPUT_WIDTH=',
+    '-DAT_INPUT_COLORS=',
+    '-DSTACK_SIZE=4096',
+    '-DSLAVE_STACK_SIZE=1024',
+    '-DAT_IMAGE=',
     '-fstack-protector-strong',
     '-DCONFIG_AI_DECK',
     '-DRT_FC_STACK_SIZE=2048',
@@ -43,7 +55,7 @@ GAP8_C_Flags = [
     '-DCONFIG_GAP',
     '-D__PULP_OS__',
     '-include',
-    meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/include/rt/chips/gap_rev1/config.h',
+    meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/include/rt/chips/gap_rev1/config.h'
 ]
 
 GAP8_CXX_Flags = [
@@ -61,47 +73,84 @@ GAP8_Link_Flags = [
     '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/link.gap8_rev1.ld',
     '-nostartfiles',
     '-nostdlib',
-    '-fno-exceptions',
+    '-fno-exceptions'
 ]
 
 Includes = include_directories(
     '.',
+    './Model',
     GAP_SDK_Location / 'install/GAP8_V2/include',
     GAP_SDK_Location / 'install/GAP8_V2/include/io',
     GAP_SDK_Location / 'install/workstation/include',
     GAP_SDK_Location / 'libs/frame_streamer/include',
     GAP_SDK_Location / 'tools/autotiler_v3/Emulation',
+    GAP_SDK_Location / 'libs/gap_lib/include',
+    GAP_SDK_Location / 'tools/autotiler_v3/Emulation',
+    GAP_SDK_Location / 'tools/autotiler_v3/Autotiler',
+    GAP_SDK_Location / 'tools/autotiler_v3/Generators/BilinearResizes',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_fp16',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8',
     ETL_Location
 )
 
-Lib_pibsp = C_Compiler.find_library(
+Native_C_Flags = []
+Native_CXX_Flags = [
+    Native_C_Flags
+]
+
+GenTile_Includes = include_directories(
+    '.',
+    GAP_SDK_Location / 'tools/autotiler_v3/Autotiler',
+    GAP_SDK_Location / 'tools/autotiler_v3/Emulation',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators',
+    GAP_SDK_Location / 'tools/autotiler_v3/Generators/BilinearResizes',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_fp16',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Generators',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators_SQ8',
+    GAP_SDK_Location / 'tools/autotiler_v3/Generators/BilinearResizes',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_fp16',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8'
+)
+
+Lib_pibsp = GAP8_C_Compiler.find_library(
     'pibsp', 
     dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap/ai_deck', 
     required: true
 )
-Lib_rt = C_Compiler.find_library(
+Lib_rt = GAP8_C_Compiler.find_library(
     'librt', 
     dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap',
     required: true,
     static: true
 )
-Lib_rtio = C_Compiler.find_library(
+Lib_rtio = GAP8_C_Compiler.find_library(
     'librtio', 
     dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap', 
     required: true
 )
-Lib_gaptools = C_Compiler.find_library(
+Lib_gaptools = GAP8_C_Compiler.find_library(
     'libgaptools',
     dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap/ai_deck',
     required: true
 )
-Lib_gaplib = C_Compiler.find_library(
+Lib_gaplib = GAP8_C_Compiler.find_library(
     'libgaplib',
     dirs: meson.project_source_root() / GAP_SDK_Location / 'install/GAP8_V2/lib/gap/ai_deck',
     required: true
 )
-Lib_gcc = C_Compiler.find_library(
+Lib_gcc = GAP8_C_Compiler.find_library(
     'gcc',
+    required: true
+)
+
+Lib_AutoTiler = Native_C_Compiler.find_library(
+    'LibTile',
+    dirs: meson.project_source_root() / GAP_SDK_Location / 'tools/autotiler_v3/Autotiler',
     required: true
 )
 
@@ -110,15 +159,144 @@ Sources = files(
     GAP_SDK_Location / 'gap8/rtos/pulp/pulp-os/kernel/conf.c'
 )
 
+Tile_Kernel_Sources = files(
+    GAP_SDK_Location / 'libs/gap_lib/img_io/ImgIO.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries/SSD_BasicKernels.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/Generators/BilinearResizes/ResizeBasicKernels.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries/CNN_Copy.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_AT_Misc.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/CmplxFunctions.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/FFT_Library.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/MfccBasicKernels.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/PreProcessing.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/math_funcs.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/pulp_dsp/plp_cos_f32s_xpulpv2.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/pulp_dsp/plp_sin_f32s_xpulpv2.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Libraries/pulp_dsp/plp_common_tables.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_Activation_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_Activation_HWC_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_Bias_Linear_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_Conv_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_MatMul_Conv_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_Pooling_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_Conv_DW_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_MatAlgebra_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/CNN_SoftMax_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries_SQ8/RNN_SQ8.c'
+)
+
+GenTile_Sources = files(
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators/CNN_Generator_Util.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators/CNN_Copy_Generators.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators/SSD_Generators.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/Generators/BilinearResizes/ResizeGenerator.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/DSP_Generators/DSP_Generators.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators_SQ8/CNN_Generators_SQ8.c',
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators_SQ8/RNN_Generators_SQ8.c'
+)
+
+Prog_NNTOOL = find_program('nntool')
 Prog_size = find_program('riscv32-unknown-elf-size')
+
+L1_Reserved_Memory = '64000'
+L2_Reserved_Memory = '300000'
+L3_Reserved_Memory = '8000000'
 
 subdir('Core')
 subdir('Gapack')
 
+Model_State_File = custom_target(
+    'model_state_file',
+    input: [
+        'Model/nntool_script',
+        'Model/ptq_int8.tflite'
+    ],
+    output: [
+        'ptq_int8.json'
+    ],
+    command: [
+        Prog_NNTOOL, 
+        '-s', 
+        '@INPUT0@',
+        '@INPUT1@',
+        '-q'
+    ]
+)
+
+Model_Tensors = custom_target(
+    'model_tensors_and_gentile_sources',
+    input: [
+        Model_State_File
+    ],
+    output: [
+        'ptq_int8Model.c',
+        'ptq_int8Info.h',
+        'Expression_Kernels.c',
+        'Expression_Kernels.h'
+    ],
+    command: [
+        Prog_NNTOOL,
+        '-g', 
+        '-M',
+        '.',
+        '-m',
+        '@OUTPUT0@',
+        '-T',
+        'tensors',
+        '-H',
+        '@OUTPUT1@',
+        '@INPUT0@'
+    ]
+)
+
+GenTile_Binary = executable(
+    'GenTile',
+    [
+        GenTile_Sources, 
+        Model_Tensors[0]
+    ],
+    dependencies: [
+        Lib_AutoTiler
+    ],
+    include_directories: GenTile_Includes,
+    c_args: [
+        Native_C_Flags
+    ],
+    native: true
+)
+
+GAP8_Model_Sources = custom_target(
+    'gap8_model_sources',
+    input: [
+        GenTile_Binary
+    ],
+    output: [
+        'ptq_int8Kernels.c',
+        'ptq_int8Kernels.h',
+        'ptq_int8_L3_Flash_Const.dat'
+    ],
+    command: [
+        GenTile_Binary,
+        '-c',
+        'tensors',
+        '--L1',
+        L1_Reserved_Memory,
+        '--L2',
+        L2_Reserved_Memory,
+        '--L3',
+        L3_Reserved_Memory
+    ]
+)
+
 Project_GVSOC_Binary = executable(
     meson.project_name(),
     [
-        Sources, 
+        Model_Tensors[1],
+        Model_Tensors[2],
+        Model_Tensors[3],
+        GAP8_Model_Sources,
+        Tile_Kernel_Sources,
+        Sources
     ],
     dependencies: [
         Lib_pibsp, 
@@ -147,7 +325,12 @@ Project_GVSOC_Binary = executable(
 Project_AIdeck_Binary = executable(
     meson.project_name() + '-AIdeck',
     [
-        Sources, 
+        Model_Tensors[1],
+        Model_Tensors[2],
+        Model_Tensors[3],
+        GAP8_Model_Sources,
+        Tile_Kernel_Sources,
+        Sources
     ],
     dependencies: [
         Lib_pibsp, 

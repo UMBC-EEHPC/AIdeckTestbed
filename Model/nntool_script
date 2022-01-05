@@ -1,0 +1,9 @@
+set log_level INFO
+adjust
+fusions -a expression_matcher
+fusions --scale8
+imageformat input_1 bw8 offset_int8
+set graph_produce_node_names true
+set graph_produce_operinfos true
+set graph_monitor_cycles true
+save_state ../build/ptq_int8.json
