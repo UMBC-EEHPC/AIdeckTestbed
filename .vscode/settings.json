@@ -67,7 +67,8 @@
         "mutex": "cpp",
         "__availability": "cpp",
         "__bit_reference": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "pulp.h": "c"
     },
     "files.exclude": {
         "Toolchain/Build": true,
