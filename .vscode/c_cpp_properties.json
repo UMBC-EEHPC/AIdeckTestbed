@@ -7,6 +7,7 @@
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/io/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/workstation/include/**",
+                "${workspaceFolder}/Toolchain/gap_sdk/gap8/rtos/pulp/archi/target/include/**",
                 "${workspaceFolder}/Toolchain/etl/include/**"
             ],
             "forcedInclude": [
@@ -40,6 +41,7 @@
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/io/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/workstation/include/**",
+                "${workspaceFolder}/Toolchain/gap_sdk/gap8/rtos/pulp/archi/target/include/**",
                 "${workspaceFolder}/Toolchain/etl/include/**"
             ],
             "forcedInclude": [
