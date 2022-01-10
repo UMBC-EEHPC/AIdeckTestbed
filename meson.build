@@ -34,7 +34,7 @@ GAP8_C_Flags = [
     '-DAT_INPUT_WIDTH=',
     '-DAT_INPUT_COLORS=',
     '-DSTACK_SIZE=4096',
-    '-DSLAVE_STACK_SIZE=1024',
+    '-DSLAVE_STACK_SIZE=2048',
     '-DAT_IMAGE=',
     '-fstack-protector-strong',
     '-DCONFIG_AI_DECK',
@@ -79,6 +79,7 @@ GAP8_Link_Flags = [
 Includes = include_directories(
     '.',
     './Model',
+    './Model/Data',
     GAP_SDK_Location / 'install/GAP8_V2/include',
     GAP_SDK_Location / 'install/GAP8_V2/include/io',
     GAP_SDK_Location / 'install/workstation/include',
@@ -198,18 +199,19 @@ GenTile_Sources = files(
 Prog_NNTOOL = find_program('nntool')
 Prog_size = find_program('riscv32-unknown-elf-size')
 
-L1_Reserved_Memory = '64000'
-L2_Reserved_Memory = '300000'
+L1_Reserved_Memory = '40000'
+L2_Reserved_Memory = '190000'
 L3_Reserved_Memory = '8000000'
 
 subdir('Core')
 subdir('Gapack')
+subdir('Model')
 
 Model_State_File = custom_target(
     'model_state_file',
     input: [
-        'Model/nntool_script',
-        'Model/ptq_int8.tflite'
+        'Model/Data/nntool_script',
+        'Model/Data/ptq_int8.tflite'
     ],
     output: [
         'ptq_int8.json'
