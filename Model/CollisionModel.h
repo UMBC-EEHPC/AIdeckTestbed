@@ -24,7 +24,9 @@ class CollisionModel final : public Core::Support::Kernel {
 		CollisionModel(CollisionModel const&) = delete;
         CollisionModel& operator=(CollisionModel const&) = delete;
 
-		~CollisionModel();
+		void close_model();
+
+		~CollisionModel() = default;
 	private:
 		
 };

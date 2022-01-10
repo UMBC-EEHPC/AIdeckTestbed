@@ -49,6 +49,7 @@ void program_main_2() {
 	assert_gap8(cluster.open_cluster());
 	Model::CollisionModel cm;
 	assert_gap8(cluster.submit_kernel_synchronously(cm));
+	cm.close_model();
 	assert_gap8(cluster.close_cluster());
 
 #if 0

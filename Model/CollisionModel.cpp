@@ -32,7 +32,7 @@ CollisionModel::CollisionModel() : Kernel(0, STACK_SIZE, SLAVE_STACK_SIZE, clust
     assert_gap8(Img_In != nullptr);
 }
 
-CollisionModel::~CollisionModel() {
+void CollisionModel::close_model() {
     ptq_int8CNN_Destruct();
 #ifdef PERF
     unsigned int TotalCycles = 0, TotalOper = 0;
