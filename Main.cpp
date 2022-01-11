@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <Core/Device/Camera/Camera.h>
 #include <Core/Device/Cluster/Cluster.h>
+#include <Core/Device/CPU/CPU.h>
 #include <Core/Device/Serial/UART.h>
 #include <Core/Device/WIFI/WIFI.h>
 #include <Core/Device/WIFI/FrameStreamer.h>
@@ -49,6 +50,7 @@ void program_main_2() {
 	assert_gap8(cluster.open_cluster());
 	Model::CollisionModel cm;
 	assert_gap8(cluster.submit_kernel_synchronously(cm));
+	printf("FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
 	cm.close_model();
 	assert_gap8(cluster.close_cluster());
 
