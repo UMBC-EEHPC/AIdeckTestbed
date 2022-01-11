@@ -7,10 +7,10 @@ project(
         'b_lto=false',
         'b_pch=false',
         'b_staticpic=false',
-        'buildtype=debug',
+        'buildtype=release',
         'cpp_rtti=false',
         'cpp_eh=none',
-        'debug=true',
+        'debug=false',
         'c_std=gnu99',
         'cpp_std=gnu++17'
     ],
@@ -26,6 +26,7 @@ Native_CXX_Compiler = meson.get_compiler('cpp', native: true)
 Native_C_Compiler = meson.get_compiler('c', native: true)
 
 GAP8_C_Flags = [
+    '-march=rv32imcxgap8',
     '-DCONFIG_FLL_MAXDCO_FREQ=900000000',
     '-DUSE_HYPER',
     '-DPERF',
@@ -34,7 +35,7 @@ GAP8_C_Flags = [
     '-DAT_INPUT_WIDTH=',
     '-DAT_INPUT_COLORS=',
     '-DSTACK_SIZE=4096',
-    '-DSLAVE_STACK_SIZE=2048',
+    '-DSLAVE_STACK_SIZE=3072',
     '-DAT_IMAGE=',
     '-fstack-protector-strong',
     '-DCONFIG_AI_DECK',
@@ -199,7 +200,7 @@ GenTile_Sources = files(
 Prog_NNTOOL = find_program('nntool')
 Prog_size = find_program('riscv32-unknown-elf-size')
 
-L1_Reserved_Memory = '40000'
+L1_Reserved_Memory = '30000'
 L2_Reserved_Memory = '190000'
 L3_Reserved_Memory = '8000000'
 
