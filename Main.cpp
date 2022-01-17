@@ -12,16 +12,17 @@
 #include <Model/CollisionModel.h>
 
 void program_main_2() {
+	printf("Initializing devices\n");
 	Core::Heap::L2Heap l2heap;
 	Core::Heap::L1Heap l1heap;
 
+#ifndef __PLATFORM_GVSOC__
 	auto* uart_or_error = Core::Device::UART::initialize();
 	if (!uart_or_error)
 		assert_not_reached_gap8();
 	auto& uart = *uart_or_error;
 	uart.write("Initialized UART\n");
-
-#ifndef __PLATFORM_GVSOC__
+	
 	auto* camera_or_error = Core::Device::Camera::initialize();
 	if (!camera_or_error)
 		assert_not_reached_gap8();
@@ -34,32 +35,38 @@ void program_main_2() {
 	auto& wifi = *wifi_or_error;
 	printf("Initialized WIFI\n");
 
-	auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera);
+	auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 200, 200);
 	if (!frame_streamer_or_error)
 		assert_not_reached_gap8();
 	auto& frame_streamer = *frame_streamer_or_error;
 	printf("Initialized frame streamer\n");
 #endif
 
+	auto camera_frame_buffer = Core::Containers::create_vector_on_heap<char, Core::Heap::L2Heap>(
+		camera.get_image_width() * camera.get_image_height()
+	);
+	printf("Allocated camera output frame buffer\n");
+	auto model_frame_buffer = Core::Containers::create_vector_on_heap<char, Core::Heap::L2Heap>(
+		200 * 200
+	);
+	printf("Allocated neural network input frame buffer\n");
+
 	auto* cluster_or_error = Core::Device::Cluster::initialize();
 	if (!cluster_or_error)
 		assert_not_reached_gap8();
 	auto& cluster = *cluster_or_error;
 	printf("Initialized cluster\n");
-
 	assert_gap8(cluster.open_cluster());
-	Model::CollisionModel cm;
+
+#ifdef __PLATFORM_GVSOC__
+	Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
 	assert_gap8(cluster.submit_kernel_synchronously(cm));
 	printf("FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
 	cm.close_model();
 	assert_gap8(cluster.close_cluster());
+#endif
 
-#if 0
-	auto frame_buffer = Core::Containers::create_vector_on_heap<char, Core::Heap::L2Heap>(
-		camera.get_image_width() * camera.get_image_height()
-	);
-	printf("Allocated frame buffer\n");
-	
+#ifndef __PLATFORM_GVSOC__	
 	Gapack::Matrix matrix({
 		{1, 2, 3},
 		{4, 5, 6},
@@ -67,9 +74,13 @@ void program_main_2() {
 	});
 	matrix.print();
 
+	Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
+	assert_gap8(cluster.submit_kernel_synchronously(cm));
+
 	while (true) {
-		camera.capture_image(frame_buffer);
-		frame_streamer.send_frame(frame_buffer);
+		camera.capture_image(camera_frame_buffer);
+		assert_gap8(cluster.submit_kernel_synchronously(cm));
+		frame_streamer.send_frame(model_frame_buffer);
 	}
 #endif
 }

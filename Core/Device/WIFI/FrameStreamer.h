@@ -9,12 +9,14 @@
 namespace Core::Device {
 
 class FrameStreamer {
-    SINGLETON_CLASS_WITH_ARGS(FrameStreamer, WIFI& wifi, Camera& camera)
+    SINGLETON_CLASS_WITH_ARGS(FrameStreamer, WIFI& wifi, Camera& camera, int width, int height)
     public:
         bool send_frame(etl::vector_ext<char>& frame_data);
     private:
         frame_streamer_conf m_config;
         frame_streamer_t* m_frame_streamer_meta;
+        int m_width;
+        int m_height;
 };
 
 }

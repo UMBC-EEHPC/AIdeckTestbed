@@ -161,6 +161,10 @@ Sources = files(
     GAP_SDK_Location / 'gap8/rtos/pulp/pulp-os/kernel/conf.c'
 )
 
+GenResize_Sources = files(
+    'Model/Data/ResizeModel.c'
+)
+
 Tile_Kernel_Sources = files(
     GAP_SDK_Location / 'libs/gap_lib/img_io/ImgIO.c',
     GAP_SDK_Location / 'tools/autotiler_v3/CNN_Libraries/SSD_BasicKernels.c',
@@ -207,6 +211,63 @@ L3_Reserved_Memory = '8000000'
 subdir('Core')
 subdir('Gapack')
 subdir('Model')
+
+Lib_AutoTilerGen = static_library(
+    'AutoTilerGen',
+    [
+        GenTile_Sources
+    ],
+    dependencies: [
+        Lib_AutoTiler
+    ],
+    include_directories: GenTile_Includes,
+    c_args: [
+        Native_C_Flags
+    ],
+    override_options: [
+        'warning_level=0'
+    ],
+    native: true
+)
+
+GenResize_Binary = executable(
+    'GenResize',
+    [
+        GenResize_Sources
+    ],
+    link_with: [
+        Lib_AutoTilerGen
+    ],
+    include_directories: GenTile_Includes,
+    c_args: [
+        Native_C_Flags
+    ],
+    override_options: [
+        'warning_level=0'
+    ],
+    native: true
+)
+
+GAP8_Resize_Sources = custom_target(
+    'gap8_resize_sources',
+    input: [
+        GenResize_Binary
+    ],
+    output: [
+        'ResizeKernels.c',
+        'ResizeKernels.h',
+        'ResizeBasicKernels.h'
+    ],
+    command: [
+        GenResize_Binary,
+        '--L1',
+        L1_Reserved_Memory,
+        '--L2',
+        L2_Reserved_Memory,
+        '--L3',
+        L3_Reserved_Memory
+    ]
+)
 
 Model_State_File = custom_target(
     'model_state_file',
@@ -255,15 +316,17 @@ Model_Tensors = custom_target(
 GenTile_Binary = executable(
     'GenTile',
     [
-        GenTile_Sources, 
         Model_Tensors[0]
     ],
-    dependencies: [
-        Lib_AutoTiler
+    link_with: [
+        Lib_AutoTilerGen
     ],
     include_directories: GenTile_Includes,
     c_args: [
         Native_C_Flags
+    ],
+    override_options: [
+        'warning_level=0'
     ],
     native: true
 )
@@ -291,14 +354,42 @@ GAP8_Model_Sources = custom_target(
     ]
 )
 
-Project_GVSOC_Binary = executable(
-    meson.project_name(),
+Lib_AutoTilerKernels_GVSOC = static_library(
+    'AutoTilerKernels_GVSOC',
     [
+        Tile_Kernel_Sources,
         Model_Tensors[1],
         Model_Tensors[2],
         Model_Tensors[3],
         GAP8_Model_Sources,
-        Tile_Kernel_Sources,
+        GAP8_Resize_Sources
+    ],
+    dependencies: [
+        Lib_pibsp, 
+        Lib_rt, 
+        Lib_rtio, 
+        Lib_gaplib,
+        Lib_gaptools,
+        Lib_gcc
+    ],
+    include_directories: Includes,
+    c_args: [
+        GAP8_C_Flags,
+        '-D__PLATFORM_GVSOC__'
+    ],
+    link_args: [
+        GAP8_Link_Flags,
+        '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
+    ],
+    override_options: [
+        'warning_level=0'
+    ],
+    native: false
+)
+
+Project_GVSOC_Binary = executable(
+    meson.project_name(),
+    [
         Sources
     ],
     dependencies: [
@@ -308,6 +399,9 @@ Project_GVSOC_Binary = executable(
         Lib_gaplib,
         Lib_gaptools,
         Lib_gcc
+    ],
+    link_with: [
+        Lib_AutoTilerKernels_GVSOC
     ],
     include_directories: Includes,
     c_args: [
@@ -325,14 +419,43 @@ Project_GVSOC_Binary = executable(
     native: false
 )
 
-Project_AIdeck_Binary = executable(
-    meson.project_name() + '-AIdeck',
+Lib_AutoTilerKernels_AIdeck = static_library(
+    'AutoTilerKernels_AIdeck',
     [
+        Tile_Kernel_Sources,
         Model_Tensors[1],
         Model_Tensors[2],
         Model_Tensors[3],
         GAP8_Model_Sources,
-        Tile_Kernel_Sources,
+        GAP8_Resize_Sources
+    ],
+    dependencies: [
+        Lib_pibsp, 
+        Lib_rt, 
+        Lib_rtio, 
+        Lib_gaplib,
+        Lib_gaptools,
+        Lib_gcc
+    ],
+    include_directories: Includes,
+    c_args: [
+        GAP8_C_Flags,
+        '-D__PLATFORM_BOARD__',
+        '-D__RT_IODEV__=2'
+    ],
+    link_args: [
+        GAP8_Link_Flags,
+        '-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gapuino.conf.ld'
+    ],
+    override_options: [
+        'warning_level=0'
+    ],
+    native: false
+)
+
+Project_AIdeck_Binary = executable(
+    meson.project_name() + '-AIdeck',
+    [
         Sources
     ],
     dependencies: [
@@ -342,6 +465,9 @@ Project_AIdeck_Binary = executable(
         Lib_gaplib,
         Lib_gaptools, 
         Lib_gcc
+    ],
+    link_with: [
+        Lib_AutoTilerKernels_AIdeck
     ],
     include_directories: Includes,
     c_args: [

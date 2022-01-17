@@ -5,10 +5,17 @@
 
 extern "C" volatile unsigned int __L3_Read, __L3_Write, __L2_Read, __L2_Write;
 
+extern "C" L1_CL_MEM AT_L1_POINTER ptq_int8_L1_Memory;
+extern "C" L2_MEM AT_L2_POINTER ptq_int8_L2_Memory;
+
+extern "C" L1_CL_MEM AT_L1_POINTER Resize_L1_Memory;
+extern "C" L2_MEM AT_L2_POINTER Resize_L2_Memory;
+
 extern "C" AT_HYPERFLASH_FS_EXT_ADDR_TYPE volatile ptq_int8_L3_Flash = 0;
 
 PI_L2 volatile uint8_t ResOut;
 PI_L2 volatile uint8_t *Img_In;
+PI_L2 volatile uint8_t *Img_Resized;
 
 volatile static void cluster(void* arg) {
     printf("Entered cluster\n");
@@ -16,19 +23,24 @@ volatile static void cluster(void* arg) {
 	gap_cl_starttimer();
 	gap_cl_resethwtimer();
 #endif
-	ptq_int8CNN(Img_In, &ResOut);
+    ResizeImage(Img_In, Img_Resized);
+	ptq_int8CNN(Img_Resized, &ResOut);
 }
 
 namespace Model {
 
-CollisionModel::CollisionModel() : Kernel(0, STACK_SIZE, SLAVE_STACK_SIZE, cluster, nullptr) {
+CollisionModel::CollisionModel(etl::vector_ext<char>& frame_data, etl::vector_ext<char>& frame_resized) : Kernel(0, STACK_SIZE, SLAVE_STACK_SIZE, cluster, nullptr) {
     assert_gap8(Core::Device::Cluster::self().is_cluster_open())
     assert_gap8(!ptq_int8CNN_Construct());
 
-    Img_In = static_cast<uint8_t*>(
-        Core::Heap::L2Heap::self().allocate((CAM_WIDTH*CAM_HEIGHT)*sizeof(uint8_t))
-    );
+    Img_In = (volatile uint8_t*)frame_data.data();
     assert_gap8(Img_In != nullptr);
+
+    Img_Resized = (volatile uint8_t*)frame_resized.data();
+    assert_gap8(Img_Resized != nullptr);
+
+    Resize_L1_Memory = ptq_int8_L1_Memory;
+    Resize_L2_Memory = ptq_int8_L2_Memory;
 }
 
 void CollisionModel::close_model() {
