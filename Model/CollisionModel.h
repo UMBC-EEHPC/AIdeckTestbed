@@ -21,16 +21,17 @@ namespace Model {
 
 class CollisionModel final : public Core::Support::Kernel {
 	public:
-		CollisionModel(etl::vector_ext<char>& frame_data, etl::vector_ext<char>& frame_resized);
+		CollisionModel(etl::vector_ext<uint8_t>& frame_data, etl::vector_ext<uint8_t>& frame_resized);
 
 		CollisionModel(CollisionModel const&) = delete;
         CollisionModel& operator=(CollisionModel const&) = delete;
 
+		[[nodiscard]] bool open_model();
 		void close_model();
 
-		~CollisionModel() = default;
+		~CollisionModel();
 	private:
-		
+		bool m_is_model_open;
 };
 
 }

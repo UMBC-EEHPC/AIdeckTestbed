@@ -41,7 +41,7 @@ Camera& Camera::self() {
     return *g_camera;
 }
 
-void Camera::capture_image(vector_ext<char>& buffer) {
+void Camera::capture_image(vector_ext<uint8_t>& buffer) {
     pi_camera_control(&m_camera_device, PI_CAMERA_CMD_START, 0);
     pi_camera_capture(&m_camera_device, buffer.data(), get_image_width() * get_image_height());
     pi_camera_control(&m_camera_device, PI_CAMERA_CMD_STOP, 0);

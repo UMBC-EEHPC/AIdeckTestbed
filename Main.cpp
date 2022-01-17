@@ -42,11 +42,17 @@ void program_main_2() {
 	printf("Initialized frame streamer\n");
 #endif
 
-	auto camera_frame_buffer = Core::Containers::create_vector_on_heap<char, Core::Heap::L2Heap>(
+#ifndef __PLATFORM_GVSOC__
+	auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
 		camera.get_image_width() * camera.get_image_height()
 	);
+#else
+	auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
+		324*244
+	);
+#endif
 	printf("Allocated camera output frame buffer\n");
-	auto model_frame_buffer = Core::Containers::create_vector_on_heap<char, Core::Heap::L2Heap>(
+	auto model_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
 		200 * 200
 	);
 	printf("Allocated neural network input frame buffer\n");

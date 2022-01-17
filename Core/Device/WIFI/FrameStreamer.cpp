@@ -35,7 +35,7 @@ FrameStreamer& FrameStreamer::self() {
     return *g_frame_streamer;
 }
 
-bool FrameStreamer::send_frame(vector_ext<char>& frame_data) {
+bool FrameStreamer::send_frame(vector_ext<uint8_t>& frame_data) {
     pi_buffer_t buffer;
     pi_buffer_init(&buffer, PI_BUFFER_TYPE_L2, frame_data.data());
     pi_buffer_set_format(&buffer, m_width, m_height, 1, PI_BUFFER_FORMAT_GRAY);

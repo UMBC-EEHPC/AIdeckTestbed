@@ -17,7 +17,7 @@ class Kernel {
         constexpr Kernel(uint8_t num_cores, 
                 uint16_t fc_stack_size, 
                 uint16_t cc_stack_size, 
-                void (*cluster_task)(void*),
+                volatile void (*cluster_task)(void*),
                 void* args) :
             m_num_cores(num_cores),
             m_fc_stack_size(fc_stack_size),
@@ -34,7 +34,7 @@ class Kernel {
         [[nodiscard]] constexpr uint16_t get_cc_stack_size() const {
             return m_cc_stack_size;
         }
-        [[nodiscard]] constexpr void(*get_cluster_task(void) const)(void*) {
+        [[nodiscard]] constexpr volatile void(*get_cluster_task(void) const)(void*) {
             return m_cluster_task;
         }
         [[nodiscard]] constexpr void* get_args() const {
@@ -44,7 +44,7 @@ class Kernel {
         uint8_t m_num_cores;
         uint16_t m_fc_stack_size;
         uint16_t m_cc_stack_size;
-        void (*m_cluster_task)(void*);
+        volatile void (*m_cluster_task)(void*);
         void* m_args;
 };
 
