@@ -20,15 +20,15 @@ inline void set_cluster_voltage(float voltage) {
     pi_pmu_voltage_set(PI_PMU_DOMAIN_CL, static_cast<uint32_t>(voltage * 1000));
 }
 
-inline uint32_t get_fabric_frequency() {
+inline unsigned int get_fabric_frequency() {
     return pi_freq_get(PI_FREQ_DOMAIN_FC);
 }
 
-inline uint32_t get_cluster_frequency() {
+inline unsigned int get_cluster_frequency() {
     return pi_freq_get(PI_FREQ_DOMAIN_CL);
 }
 
-inline uint32_t get_peripheral_frequency() {
+inline unsigned int get_peripheral_frequency() {
     return pi_freq_get(PI_FREQ_DOMAIN_PERIPH);
 }
 
