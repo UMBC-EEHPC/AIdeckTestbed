@@ -1,4 +1,5 @@
 subdir('Camera')
 subdir('Cluster')
 subdir('Serial')
+subdir('Timer')
 subdir('WIFI')

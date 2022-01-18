@@ -3,6 +3,7 @@
 #include <Core/Device/Cluster/Cluster.h>
 #include <Core/Device/CPU/CPU.h>
 #include <Core/Device/Serial/UART.h>
+#include <Core/Device/Timer/Timer.h>
 #include <Core/Device/WIFI/WIFI.h>
 #include <Core/Device/WIFI/FrameStreamer.h>
 #include <Core/Heap/L2Heap.h>
@@ -66,8 +67,11 @@ void program_main_2() {
 
 #ifdef __PLATFORM_GVSOC__
 	Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
+	Core::Device::Timer timer;
+	timer.reset_timer();
 	assert_gap8(cluster.submit_kernel_synchronously(cm));
-	printf("FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
+	unsigned int total_time = timer.get_elapsed_time_us();
+	printf("Elapsed Time: %u uSec, FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", total_time, Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
 	cm.close_model();
 	assert_gap8(cluster.close_cluster());
 #endif

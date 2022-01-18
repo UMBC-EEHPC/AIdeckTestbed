@@ -11,6 +11,8 @@ extern "C" {
 #include <tools/frame_streamer.h>
 #include <bsp/bsp.h>
 #include "Gap.h"
+#include "pulp.h"
+#include "rt/rt_api.h"
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 }
