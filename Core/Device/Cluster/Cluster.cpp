@@ -29,7 +29,7 @@ static Cluster* g_cluster = nullptr;
 
 [[nodiscard]] bool Cluster::submit_kernel_synchronously(Core::Support::Kernel const& kernel) {
 	struct pi_cluster_task task = {0};
-    task.entry = kernel.get_cluster_task();
+    task.entry = reinterpret_cast<void (*)(void*)>(kernel.get_cluster_task());
     task.arg = NULL;
     task.stack_size = (unsigned int) STACK_SIZE;
     task.slave_stack_size = (unsigned int) SLAVE_STACK_SIZE;
