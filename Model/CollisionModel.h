@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Benchmarks.h>
 #include <Core/Support/Kernel.h>
 #include <Core/Support/Assertions.h>
 #include <Core/Device/Cluster/Cluster.h>

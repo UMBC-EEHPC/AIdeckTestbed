@@ -33,7 +33,7 @@ GAP8_C_Flags = [
     '-DAT_INPUT_HEIGHT=',
     '-DAT_INPUT_WIDTH=',
     '-DAT_INPUT_COLORS=',
-    '-DSTACK_SIZE=6144',
+    '-DSTACK_SIZE=4096',
     '-DSLAVE_STACK_SIZE=3072',
     '-DAT_IMAGE=',
     '-fstack-protector-strong',
@@ -293,7 +293,9 @@ Model_Tensors = custom_target(
     ],
     output: [
         'ptq_int8Model.c',
-        'ptq_int8Info.h'
+        'ptq_int8Info.h',
+        'Expression_Kernels.c',
+        'Expression_Kernels.h'
     ],
     command: [
         Prog_NNTOOL,
@@ -356,6 +358,8 @@ Lib_AutoTilerKernels_GVSOC = static_library(
     [
         Tile_Kernel_Sources,
         Model_Tensors[1],
+        Model_Tensors[2],
+        Model_Tensors[3],
         GAP8_Model_Sources,
         GAP8_Resize_Sources
     ],
@@ -419,6 +423,8 @@ Lib_AutoTilerKernels_AIdeck = static_library(
     [
         Tile_Kernel_Sources,
         Model_Tensors[1],
+        Model_Tensors[2],
+        Model_Tensors[3],
         GAP8_Model_Sources,
         GAP8_Resize_Sources
     ],

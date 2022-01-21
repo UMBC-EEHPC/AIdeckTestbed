@@ -15,7 +15,6 @@
             ],
             "defines": [
                 "USE_HYPER",
-                "PERF",
                 "CONFIG_AI_DECK",
                 "STACK_SIZE=4096",
                 "SLAVE_STACK_SIZE=1024",
@@ -49,7 +48,6 @@
             ],
             "defines": [
                 "USE_HYPER",
-                "PERF",
                 "CONFIG_AI_DECK",
                 "STACK_SIZE=4096",
                 "SLAVE_STACK_SIZE=1024",

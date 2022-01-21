@@ -1,3 +1,4 @@
+#include <Benchmarks.h>
 #include <stdint.h>
 #include <Core/Device/Camera/Camera.h>
 #include <Core/Device/Cluster/Cluster.h>
@@ -14,16 +15,26 @@
 
 void program_main_2() {
 	printf("Initializing devices\n");
+	Core::Device::CPU::set_fabric_voltage(1.2);
+	Core::Device::CPU::set_cluster_voltage(1.2);
+	Core::Device::CPU::set_fabric_frequency(250);
+	Core::Device::CPU::set_cluster_frequency(175);
 	Core::Heap::L2Heap l2heap;
 	Core::Heap::L1Heap l1heap;
 
-#ifndef __PLATFORM_GVSOC__
+#ifdef BENCHMARKING_POWER
 	auto* uart_or_error = Core::Device::UART::initialize();
 	if (!uart_or_error)
 		assert_not_reached_gap8();
 	auto& uart = *uart_or_error;
-	uart.write("Initialized UART\n");
+	printf("Initialized UART\n");
 	
+	uart.write("+");
+	rt_time_wait_us(1000000);
+	uart.write("-");
+#endif // BENCHMARKING_POWER
+
+#ifdef BENCHMARKING_WIFI_STREAMER
 	auto* camera_or_error = Core::Device::Camera::initialize();
 	if (!camera_or_error)
 		assert_not_reached_gap8();
@@ -41,9 +52,9 @@ void program_main_2() {
 		assert_not_reached_gap8();
 	auto& frame_streamer = *frame_streamer_or_error;
 	printf("Initialized frame streamer\n");
-#endif
+#endif // BENCHMARKING_WIFI_STREAMER
 
-#ifndef __PLATFORM_GVSOC__
+#ifdef BENCHMARKING_WIFI_STREAMER
 	auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
 		camera.get_image_width() * camera.get_image_height()
 	);
@@ -51,7 +62,7 @@ void program_main_2() {
 	auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
 		324*244
 	);
-#endif
+#endif // BENCHMARKING_WIFI_STREAMER
 	printf("Allocated camera output frame buffer\n");
 	auto model_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
 		200 * 200
@@ -65,34 +76,34 @@ void program_main_2() {
 	printf("Initialized cluster\n");
 	assert_gap8(cluster.open_cluster());
 
-#ifdef __PLATFORM_GVSOC__
 	Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
+
+#ifdef BENCHMARKING_MODEL
 	Core::Device::Timer timer;
+#ifdef BENCHMARKING_POWER
+	uart.write("+");
+#endif // BENCHMARKING_POWER
 	timer.reset_timer();
 	assert_gap8(cluster.submit_kernel_synchronously(cm));
 	unsigned int total_time = timer.get_elapsed_time_us();
-	printf("Elapsed Time: %u uSec, FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", total_time, Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
+#ifdef BENCHMARKING_POWER
+	uart.write("-");
+#endif // BENCHMARKING_POWER
 	cm.close_model();
-	assert_gap8(cluster.close_cluster());
-#endif
+	printf("Elapsed Time: %u uSec, FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", total_time, Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
+#endif // BENCHMARKING_MODEL
 
-#ifndef __PLATFORM_GVSOC__	
-	Gapack::Matrix matrix({
-		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 9}
-	});
-	matrix.print();
-
-	Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
-	assert_gap8(cluster.submit_kernel_synchronously(cm));
-
+#if defined(BENCHMARKING_WIFI_STREAMER) && defined(BENCHMARKING_POWER)
+	uart.write("+");
 	while (true) {
 		camera.capture_image(camera_frame_buffer);
 		assert_gap8(cluster.submit_kernel_synchronously(cm));
 		frame_streamer.send_frame(model_frame_buffer);
 	}
-#endif
+#endif //BENCHMARKING_WIFI_STREAMER && BENCHMARKING_POWER
+	l2heap.deallocate(camera_frame_buffer.data(), 324*244);
+	l2heap.deallocate(model_frame_buffer.data(), 200*200);
+	assert_gap8(cluster.close_cluster());
 }
 
 /*
