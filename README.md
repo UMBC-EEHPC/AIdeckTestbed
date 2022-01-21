@@ -1,13 +1,10 @@
 # AIdeckTestbed
 
-Testbed for experimentation on the GAP8-based AI deck platform
+Testbed for experimentation on the GAP8-based AI-deck platform
 
 ## About
 
-I like C but it's a rather dreadful language to write long programs in, and I also don't particularly like using Make either. 
-As such I decided to dissect the GAP8 build system and reimplement the necessary build steps in Meson/Ninja, as well as take advantage of C++17.
-
-The project is rather small as of right now but I hope to eventually grow this into an all-encompassing platform for conducting research and writing programs targetting the GAP8-based AI deck platform.
+The project aims to serve as a modular platform for conducting research and writing programs targeting the GAP8-based AI-deck platform.
 
 ## Build
 
@@ -31,9 +28,9 @@ cd Toolchain
 source SourceToolchain.sh
 ```
 
-The build script will pause at least twice, once to ask for the password in order to install OpenOCD, and again in order for you to follow the steps to acquire AutoTiler
+The build script will pause at least twice, once to ask for a password in order to install OpenOCD using sudo, and again in order for you to follow some steps to acquire the AutoTiler library.
 
-Once building the Toolchain is completed, one can build the AIdeckTestbed with the following commands.
+Once the toolchain is finished building, one can build the AIdeckTestbed with the following commands.
 
 ```bash
 meson build --cross-file ai_deck.ini
@@ -52,7 +49,7 @@ This will build the project to run under the GVSOC emulator.
 ninja size_aideck disassemble_aideck aideck
 ```
 
-This will build the project to run on the AI deck itself.
+This will build the project to run on the AI-deck.
 
 ## License
 
