@@ -1,0 +1,40 @@
+diff --git a/Makefile b/Makefile
+index 5cf96bf1..f596a5d2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -178,7 +178,7 @@ openocd.checkout:
+ 	fi
+ 
+ openocd.build: openocd.checkout
+-	cd utils/openocd && ./bootstrap && ./configure --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && make && make install
++	cd utils/openocd && ./bootstrap && ./configure --disable-werror --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && make && make install
+ 
+ openocd.clean:
+ 	rm -rf $(INSTALL_DIR)/openocd tools/openocd
+diff --git a/gap8/gap8.mk b/gap8/gap8.mk
+index a4b7e977..054d7fda 100644
+--- a/gap8/gap8.mk
++++ b/gap8/gap8.mk
+@@ -180,7 +180,7 @@ openocd.checkout:
+ 
+ openocd.build: openocd.checkout
+ 	cd utils/gap8-openocd && ./bootstrap
+-	cd utils/gap8-openocd && ./configure --prefix=$(INSTALL_DIR)/gap8-openocd --program-prefix=gap8-
++	cd utils/gap8-openocd && ./configure --disable-werror --prefix=$(INSTALL_DIR)/gap8-openocd --program-prefix=gap8-
+ 	cd utils/gap8-openocd && make -j install
+ 	mkdir -p $(INSTALL_DIR)/gap8-openocd/share/openocd/scripts/tcl
+ 	cd utils/openocd_tools && cp -r tcl/* $(INSTALL_DIR)/gap8-openocd/share/openocd/scripts/tcl
+diff --git a/gvsoc/gvsoc/vp_models.mk b/gvsoc/gvsoc/vp_models.mk
+index e37a542b..3b287615 100644
+--- a/gvsoc/gvsoc/vp_models.mk
++++ b/gvsoc/gvsoc/vp_models.mk
+@@ -30,9 +30,6 @@ VP_COMP_STD_LDFLAGS=-lpulpvp
+ VP_COMP_DBG_LDFLAGS=-lpulpvp-debug
+ VP_COMP_SV_LDFLAGS=-lpulpvp-sv
+ 
+-VP_COMP_CFLAGS += -Werror -Wfatal-errors
+-VP_COMP_LDFLAGS += -Werror -Wfatal-errors
+-
+ ifdef VP_USE_SYSTEMV
+ VP_COMP_CFLAGS += -D__VP_USE_SYSTEMV
+ endif

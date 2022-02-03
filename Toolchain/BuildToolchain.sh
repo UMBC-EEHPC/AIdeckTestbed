@@ -192,6 +192,7 @@ pushd "$DIR/Build/"
         ./configure --program-prefix=gap8- \
                                         --prefix="$PREFIX" \
                                         --datarootdir="$PREFIX"/share/gap8-openocd \
+					--disable-werror \
                                         || exit 1
         echo "XXX build openocd"
         "$MAKE" -j "$MAKEJOBS" || exit 1
@@ -324,6 +325,8 @@ pushd "$DIR/gap_sdk"
     export GAP_RISCV_GCC_TOOLCHAIN="$PREFIX"
     
     source configs/ai_deck.sh
+
+    git apply ../Patches/disable_flaky_werror.patch
 
     pip3 install -r requirements.txt
     pip3 install -r doc/requirements.txt
