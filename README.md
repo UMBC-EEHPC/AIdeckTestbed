@@ -90,4 +90,4 @@ AIdeckTestbed is licensed under the MIT License.
 
 This project uses [GreenWaves Technologies' GAP SDK](https://github.com/GreenWaves-Technologies/gap_sdk) which is licensed under the Apache 2.0 license.
 
-This project uses the [Embedded Template Library](https://github.com/ETLCPP/etl) which is licensed under the MIT license.
+This project uses the [Embedded Template Library](https://github.com/ETLCPP/etl) which is licensed under the MIT License.
