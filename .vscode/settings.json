@@ -75,5 +75,8 @@
         "Toolchain/Local": true,
         "Toolchain/Tarballs": true
     },
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "clang-format.fallbackStyle": "WebKit",
+    "C_Cpp.clang_format_fallbackStyle": "WebKit",
+    "editor.formatOnSave": true
 }
