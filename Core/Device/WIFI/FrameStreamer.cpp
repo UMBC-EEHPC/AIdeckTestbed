@@ -7,7 +7,8 @@ namespace Core::Device {
 static FrameStreamer* g_frame_streamer = nullptr;
 static char* g_streamer_name = "FrameStreamer";
 
-[[nodiscard]] FrameStreamer* FrameStreamer::initialize(WIFI& wifi, Camera& camera, int width, int height) {
+[[nodiscard]] FrameStreamer* FrameStreamer::initialize(WIFI& wifi, Camera& camera, int width, int height)
+{
     if (g_frame_streamer)
         return nullptr;
 
@@ -31,11 +32,13 @@ static char* g_streamer_name = "FrameStreamer";
     return g_frame_streamer;
 }
 
-FrameStreamer& FrameStreamer::self() {
+FrameStreamer& FrameStreamer::self()
+{
     return *g_frame_streamer;
 }
 
-bool FrameStreamer::send_frame(vector_ext<uint8_t>& frame_data) {
+bool FrameStreamer::send_frame(vector_ext<uint8_t>& frame_data)
+{
     pi_buffer_t buffer;
     pi_buffer_init(&buffer, PI_BUFFER_TYPE_L2, frame_data.data());
     pi_buffer_set_format(&buffer, m_width, m_height, 1, PI_BUFFER_FORMAT_GRAY);

@@ -2,11 +2,14 @@
 
 namespace Core::Device {
 
-ClusterManager::ClusterManager() {
-    while(!Cluster::self().open_cluster());
+ClusterManager::ClusterManager()
+{
+    while (!Cluster::self().open_cluster())
+        ;
 }
 
-ClusterManager::~ClusterManager() {
+ClusterManager::~ClusterManager()
+{
     Cluster::self().close_cluster();
 }
 

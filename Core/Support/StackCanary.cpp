@@ -10,5 +10,4 @@ void __stack_chk_fail()
     printf("Stack overrun!");
     pmsis_exit(-21);
 }
-
 }

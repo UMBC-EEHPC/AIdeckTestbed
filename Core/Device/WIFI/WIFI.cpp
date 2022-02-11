@@ -6,7 +6,8 @@ namespace Core::Device {
 
 static WIFI* g_wifi = nullptr;
 
-[[nodiscard]] WIFI* WIFI::initialize() {
+[[nodiscard]] WIFI* WIFI::initialize()
+{
     if (g_wifi)
         return nullptr;
 
@@ -27,7 +28,8 @@ static WIFI* g_wifi = nullptr;
     return g_wifi;
 }
 
-WIFI& WIFI::self() {
+WIFI& WIFI::self()
+{
     return *g_wifi;
 }
 
