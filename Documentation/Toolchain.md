@@ -18,7 +18,9 @@ As the GAP8 contains some nonstandard extensions, GreenWaves Technologies mainta
 
 Returning to GreenWaves' GCC, the main feature to be aware of is that one can specify the number of cluster cores available for cross compilation using the -mPE=X CFLAG, with X being the number of cluster cores one wants to use, it can range anywhere between 1 and 8. 
 
-# C++ Standard Library
+![](InlineImages/core_cycles.png)
+
+# C++ Embedded Template Library
 
 Although the BuildToolchain.sh script compiles g++ with libstdc++ enabled, libstdc++ mostly doesn't work as the Newlib port to the GAP8 is incomplete. As such, apart from std::initializer_list, this project doesn't use any of the C++ standard library and instead uses the Embedded Template Library (ETL). As the name would suggest, ETL is designed to be a sort of C++ standard library replacement optimized for embedded microcontrollers like the GAP8. Fortunately, despite the constraints faced by programming for microcontrollers, the ETL manages to provides a reimplementation of large portions of the most commonly used parts of the C++ standard library.
 

@@ -3,7 +3,7 @@
 This document details various bits of information about the GAP8 processor on the AI-deck as it is used by this project.
 
 ## The GAP8 Processor
-![](InlineImages/ri5cy_overview.png)
+![](InlineImages/gap8_overview.png)
 *The GAP8 block diagram*
 
 The GAP8 is an ultra low power 32 bit RISC-V processor which derives from the PULP (Parallel Ultra Low Power) project, using various bits and pieces as necessary. It contains 9 CV32E40P cores, with one serving as the main application processor, and the remaining 8 serving as cluster cores which accelerate compute-intensive workloads. The Fabric Controller has direct control over the hardware and interfaces on board the GAP8. The 8 cluster cores can be turned on/off as needed in order to save power.
@@ -16,6 +16,20 @@ The GAP8 is an ultra low power 32 bit RISC-V processor which derives from the PU
 The main workhorse of the GAP8, this core was formerly known as the RI5CY when it was initially being developed by the PULP Project, but after its transfer to the OpenHW Group, is now known as CV32E40P. The CV32E40P is an in-order 4 stage 32-bit RISC-V core, implementing the Integer, Multiplication & Division, Floating Point, Compressed instructions, and custom Xpulp extensions. **However**, the CV32E40P as used by the GAP8 omits the floating point extension, and instead implements part of the supervisor mode extension along with some additional custom vector instructions. 
 
 With 9 of these cores inside the GAP8, these cores enable edge inference-making, image postprocessing, cryptographic workloads, and more. 
+
+|ENTITY |CLUSTER ID | CORE ID |
+| --- | --- | --- |
+| CORE0 | 0x00 | 0x00 |
+| CORE1 | 0x00 | 0x01 |
+| CORE2 | 0x00 | 0x02 |
+| CORE3 | 0x00 | 0x03 |
+| CORE4 | 0x00 | 0x04 |
+| CORE5 | 0x00 | 0x05 | 
+| CORE6 | 0x00 | 0x06 |
+| CORE7 | 0x00 | 0x07 |
+| FC | 0x20 | 0x00 |
+
+Somewhat confusingly, core 0 and the Fabric Controller share a core ID of 0. Despite them sharing the same core ID, they are not the same core, the way to distinguish them is to look at the cluster ID, which is 0x20 for the Fabric Controller, and 0 for the cluster cores. 
 
 ## Memory
 
@@ -51,4 +65,12 @@ Another common microcontroller interface is SPI, and the GAP8 also has two SPI i
 
 ## HyperBus
 
-This is the interface through which external HyperRAM and HyperFlash are connected to the GAP8 on the AI-deck. The tradeoff between the HyperBus and the SPI is that HyperBus has a higher bandwidth, 125mHz at a maximum, although it has higher latency, making it worse for smaller transfers. On the other hand, SPI has a lower bandwidth, only up to 50-60 mHz, although it has a lower latency, making it better at smaller transfers. 
+This is the interface through which external HyperRAM and HyperFlash are connected to the GAP8 on the AI-deck. The tradeoff between the HyperBus and the SPI is that HyperBus has a higher bandwidth, 125mHz at a maximum, although it has higher latency, making it worse for smaller transfers. On the other hand, SPI has a lower bandwidth, only up to 50-60 mHz, although it has a lower latency, making it better at smaller transfers. The AI-deck has 64 megabytes of HyperFlash and 8 megabytes of HyperRAM onboard.
+
+As previously mentioned up this document, memory on the HyperBus isn't directly mapped into the GAP8's memory map, one instead has to submit commands manually in order to transfer data in and out of L3 memory to L2 memory before the GAP8 can begin to work with the data. 
+
+## DMA Engines
+
+## Hardware Convolution Engine
+
+The Hardware Convolution Engine (HWCE) is a special purpose hardware accelerator designed to speed up the processing of common neural network steps, such as max pooling.
