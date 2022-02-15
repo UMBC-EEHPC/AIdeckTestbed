@@ -2,6 +2,10 @@
 
 Some non-obvious issues that have arisen while writing code for the GAP8...
 
+## SDK
+
+As mentioned within (Toolchain.md)[Toolchain.md], don't use the Bitcraze Docker image if you intend on doing anything with neural networks, the version of NNTool and AutoTiler that the Docker image ships with are out of date and have their fair share of bugs. 
+
 ## OS'
 
 The GAP8 has 3 different OS' available as of the time of writing, PMSIS, FreeRTOS, and PULP-OS. All of them are RTOS', and all of them are rather barebones, only really providing a thin wrapper around the hardware. This project uses the PMSIS OS. The only thing to really say about these is that although at a very high level glance their API's somewhat resemble API's you might see on a traditional desktop OS, they usually aren't the same, and there's often somewhat hidden gotchas. Thus, be careful to read the API docs and/or look at the implementation, before using a set of functions.
