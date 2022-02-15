@@ -1,12 +1,12 @@
 # GAP8
 
-This document details various bits of information about the GAP8 processor on the AI-deck as it is used by this project.
+This document details various bits of information about the GAP8 processor on the AI-deck as it is used by this project. This is by no means an exhaustive list, for a much more detailed listing/explanation of the various GAP8 features, it's highly recommended one takes a look at [the official GAP8 manual](https://gwt-website-files.s3.amazonaws.com/gap8_datasheet.pdf). 
 
 ## The GAP8 Processor
 ![](InlineImages/gap8_overview.png)
 *The GAP8 block diagram*
 
-The GAP8 is an ultra low power 32 bit RISC-V processor which derives from the PULP (Parallel Ultra Low Power) project, using various bits and pieces as necessary. It contains 9 CV32E40P cores, with one serving as the main application processor, and the remaining 8 serving as cluster cores which accelerate compute-intensive workloads. The Fabric Controller has direct control over the hardware and interfaces on board the GAP8. The 8 cluster cores can be turned on/off as needed in order to save power.
+The GAP8 is an ultra low power 32 bit RISC-V processor which derives from the PULP (Parallel Ultra Low Power) project. It contains 9 CV32E40P cores, with one serving as the main application processor, and the remaining 8 serving as cluster cores which accelerate compute-intensive workloads. The Fabric Controller has direct control over the hardware and interfaces onboard the GAP8. The 8 cluster cores can be turned on/off as needed in order to save power.
 
 ## The CV32E40P Core
 
@@ -15,7 +15,7 @@ The GAP8 is an ultra low power 32 bit RISC-V processor which derives from the PU
 
 The main workhorse of the GAP8, this core was formerly known as the RI5CY when it was initially being developed by the PULP Project, but after its transfer to the OpenHW Group, is now known as CV32E40P. The CV32E40P is an in-order 4 stage 32-bit RISC-V core, implementing the Integer, Multiplication & Division, Floating Point, Compressed instructions, and custom Xpulp extensions. **However**, the CV32E40P as used by the GAP8 omits the floating point extension, and instead implements part of the supervisor mode extension along with some additional custom vector instructions. 
 
-With 9 of these cores inside the GAP8, these cores enable edge inference-making, image postprocessing, cryptographic workloads, and more. 
+With 9 of these cores inside the GAP8, the processor is more than capable of real time edge inference-making, image postprocessing, cryptographic workloads, and more. In order to identify which core one is running on, one can use the functions pi_cluster_id() and pi_core_id() which will return one of the following values:
 
 |ENTITY |CLUSTER ID | CORE ID |
 | --- | --- | --- |
@@ -29,7 +29,7 @@ With 9 of these cores inside the GAP8, these cores enable edge inference-making,
 | CORE7 | 0x00 | 0x07 |
 | FC | 0x20 | 0x00 |
 
-Somewhat confusingly, core 0 and the Fabric Controller share a core ID of 0. Despite them sharing the same core ID, they are not the same core, the way to distinguish them is to look at the cluster ID, which is 0x20 for the Fabric Controller, and 0 for the cluster cores. 
+Somewhat confusingly, core 0 and the Fabric Controller share a core ID of 0. Despite them sharing the same core ID, they aren't the same core, the way to distinguish between them is to look at the cluster ID, which is 32 for the Fabric Controller, and 0 for the cluster cores. 
 
 ## Memory
 
@@ -45,15 +45,15 @@ Having said all of that though, it's probably possible to take advantage of C++'
 
 ## Timers
 
-The GAP8 has a variety of timers, which are each fed by a variety of clock sources such as frequency locked loops (FLL), FLLs with a prescaler, a 32 kHz clock crystal, and external events. The actual timers available on the GAP8 are a little bit confusingly stated in the manual. It states there's 5 timers total, 4 advanced timers which each have 4 PWM outputs, as well as a single 32 bit SysTick timer. The 4 PWM timers make sense, however, there is no singular 32 bit SysTick timer, what this likely refers to is the 32 bit timer used by the Fabric Controller, as well as the other 32 bit timer used by the cluster cores as a group. These two 32 bit timers can be combined to form a 64 bit timer value. The Fabric Controller is the main timer used by this project, luckily the GAP SDK provides a simple wrapper for reading the current timer value, rt_time_get_us().
+The GAP8 has several timers, which are each fed by a variety of clock sources such as frequency locked loops (FLL), FLLs with a prescaler, a 32 kHz clock crystal, and external events. The actual timers available on the GAP8 are a rather confusingly described in the manual. It states there's 5 timers total, 4 advanced timers which each have 4 PWM outputs, as well as a single 32 bit SysTick timer. The 4 PWM timers make sense, however, there is no singular 32 bit SysTick timer, what this likely refers to is the 32 bit timer used by the Fabric Controller, as well as the other 32 bit timer used by the cluster cores as a group. These two 32 bit timers can be combined to form a 64 bit timer value. The Fabric Controller is the main timer used by this project, luckily the GAP SDK provides a simple wrapper for reading the current timer value, rt_time_get_us().
 
 ## UART
 
-The GAP8 has a UART peripheral built right into it, although there doesn't seem to be any documentation on its available baudrates, it seems to be able to send at a rate of anywhere between around 100 to 625000 baud/second. Since it's UART, there's not much to say about it other than that the GAP SDK contains API bindings for interacting with it.
+The GAP8 has a UART peripheral built right into it, although there doesn't seem to be any documentation on its available baudrates, it seems to be able to send at a rate of anywhere between around 100 to 625000 baud/second. Since it's ultimately just UART, there's not much to say about it other than that the GAP SDK contains API bindings for interacting with it.
 
 ## JTAG
 
-This generally isn't too important, just like with most JTAG implementations, it's simply used for uploading programs and debugging those programs.
+This generally isn't too important, as with most JTAG implementations, it's simply used for uploading programs and debugging.
 
 ## I2C
 
@@ -65,12 +65,28 @@ Another common microcontroller interface is SPI, and the GAP8 also has two SPI i
 
 ## HyperBus
 
-This is the interface through which external HyperRAM and HyperFlash are connected to the GAP8 on the AI-deck. The tradeoff between the HyperBus and the SPI is that HyperBus has a higher bandwidth, 125mHz at a maximum, although it has higher latency, making it worse for smaller transfers. On the other hand, SPI has a lower bandwidth, only up to 50-60 mHz, although it has a lower latency, making it better at smaller transfers. The AI-deck has 64 megabytes of HyperFlash and 8 megabytes of HyperRAM onboard.
+This is the interface through which external HyperRAM and HyperFlash are connected to the GAP8 on the AI-deck. The tradeoff between the HyperBus and the SPI is that although HyperBus has a higher bandwidth, 125mHz at maximum, it also suffers from higher latency, making it worse for small transfers. On the other hand, SPI has a lower bandwidth, only up to 50-60 mHz, although it has a lower latency, making it better than the HyperBus at small transfers. The AI-deck has 64 megabytes of HyperFlash and 8 megabytes of HyperRAM onboard.
 
 As previously mentioned up this document, memory on the HyperBus isn't directly mapped into the GAP8's memory map, one instead has to submit commands manually in order to transfer data in and out of L3 memory to L2 memory before the GAP8 can begin to work with the data. 
 
 ## DMA Engines
 
+There's several DMA engines within the GAP8, possibly the most important one is the Micro DMA engine as it has primary responsibility for transferring data between the various hardware interfaces and the L2 memory. The Micro DMA engine makes 8, 16, or 32 bit transfers, and it can transfer up to 128 kilobytes during a single transaction, it's responsible for the following transfer types: 
+
+* LVDS from/to L2 
+* Camera to L2 
+* I2S0 to L2
+* I2S1 to L2
+* FC L1 from/to L2 
+* I2C0 from/to L2 
+* I2C1 from/to L2 
+* UART from/to L2
+* HyperBus from/to L2 
+* SPIM0 from/to L2 
+* SPIM1 from/to L2
+
+In addition to Micro DMA, there's also the cluster DMA engine, which is responsible for transferring data between L1 and L2 memory. It allows submitting up to 16 1D/2D transfers at once between L1 and L2 memory, although it only has 8 duplexed channels.
+
 ## Hardware Convolution Engine
 
-The Hardware Convolution Engine (HWCE) is a special purpose hardware accelerator designed to speed up the processing of common neural network steps, such as max pooling.
+The Hardware Convolution Engine (HWCE) is a special purpose hardware accelerator designed to speed up the processing of, well, convolutions during neural network operation. The HWCE assumes a stride of 1, and it also assumes that all inputs and convolution weights are 4, 8, or 16 bit fixed point values. The HWCE shares access to L1 cluster memory with the cluster and Fabric Controller cores, although unlike the rest of the devices onboard the GAP8, it doesn't have access to L2 memory.
