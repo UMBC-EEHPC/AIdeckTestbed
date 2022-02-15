@@ -4,7 +4,7 @@ Some non-obvious issues that have arisen while writing code for the GAP8...
 
 ## SDK
 
-As mentioned within (Toolchain.md)[Toolchain.md], don't use the Bitcraze Docker image if you intend on doing anything with neural networks, the version of NNTool and AutoTiler that the Docker image ships with are out of date and have their fair share of bugs. 
+As mentioned within [Toolchain.md](Toolchain.md), don't use the Bitcraze Docker image if you intend on doing anything with neural networks, the version of NNTool and AutoTiler that the Docker image ships with are out of date and have their fair share of bugs. 
 
 ## OS'
 
@@ -14,7 +14,7 @@ The GAP8 has 3 different OS' available as of the time of writing, PMSIS, FreeRTO
 
 [This article is highly recommended](https://preshing.com/20120930/weak-vs-strong-memory-models/), but to sum it up, memory ordering is essentially the order in which CPUs make reads and writes to memory, and the order in which those reads/writes become visible to other processors. As the GAP8 is based on the RISC-V architecture, it, like the majority of RISC-V cores, is weakly ordered. Although for 90% of the code you write this won't be an issue, if you're trying to directly manipulate the GAP8's hardware and peripherals without using the GAP SDK's API's, or you're actively sharing variables in memory between cores, this is something you'll have to be aware of. 
 
-Yet another challenge that adds onto this is that L2 memory is slow, if you write a value and then immediately try to read/write that value from another core, don't necessarily expect the other core to correctly "see" that value until it has been sent to RAM.
+Yet another challenge that adds onto this is that L2 memory is slow, if you write a value and then immediately try to read/write that value from another core, don't necessarily expect the other core to correctly "see" that value until it has finished being sent to RAM.
 
 ## Stack Allocation
 

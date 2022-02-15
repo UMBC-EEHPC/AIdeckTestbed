@@ -6,7 +6,7 @@ This document details various bits of information about the GAP8 processor on th
 ![](InlineImages/gap8_overview.png)
 *The GAP8 block diagram*
 
-The GAP8 is an ultra low power 32 bit RISC-V processor which derives from the PULP (Parallel Ultra Low Power) project. It contains 9 CV32E40P cores, with one serving as the main application processor, and the remaining 8 serving as cluster cores which accelerate compute-intensive workloads. The Fabric Controller has direct control over the hardware and interfaces onboard the GAP8. The 8 cluster cores can be turned on/off as needed in order to save power.
+The GAP8 is an ultra low power 32 bit RISC-V processor which derives from the PULP (Parallel Ultra Low Power) project. It contains 9 CV32E40P cores, with one serving as the main application processor, and the remaining 8 serving as cluster cores which accelerate compute-intensive workloads. The Fabric Controller has direct control over the hardware and interfaces onboard the GAP8. The 8 cluster cores can be turned on/off as needed in order to save power. The power and frequencies of these cores are dynamically adjustable, between 1.0-1.2V for power draw, and as for frequency, all the way up to 250mHz for the Fabric Controller, and 175mHz for the cluster cores (although the authors of one paper pushed the cluster cores up to 250mHz as well). Changing the frequency and power is pretty easy, both this project and the GAP SDK contain bindings for performing this.
 
 ## The CV32E40P Core
 
@@ -45,7 +45,7 @@ Having said all of that though, it's probably possible to take advantage of C++'
 
 ## Timers
 
-The GAP8 has several timers, which are each fed by a variety of clock sources such as frequency locked loops (FLL), FLLs with a prescaler, a 32 kHz clock crystal, and external events. The actual timers available on the GAP8 are a rather confusingly described in the manual. It states there's 5 timers total, 4 advanced timers which each have 4 PWM outputs, as well as a single 32 bit SysTick timer. The 4 PWM timers make sense, however, there is no singular 32 bit SysTick timer, what this likely refers to is the 32 bit timer used by the Fabric Controller, as well as the other 32 bit timer used by the cluster cores as a group. These two 32 bit timers can be combined to form a 64 bit timer value. The Fabric Controller is the main timer used by this project, luckily the GAP SDK provides a simple wrapper for reading the current timer value, rt_time_get_us().
+The GAP8 has several timers, which are each fed by a variety of clock sources such as frequency locked loops (FLL), FLLs with a prescaler, a 32 kHz clock crystal, and external events. The actual timers available on the GAP8 are rather confusingly described in the manual. It states there's 5 timers total, 4 advanced timers which each have 4 PWM outputs, as well as a single 32 bit SysTick timer. The 4 PWM timers make sense, however, there is no singular 32 bit SysTick timer, what this likely refers to is the 32 bit timer used by the Fabric Controller, as well as the other 32 bit timer used by the cluster cores as a group. These two 32 bit timers can be combined to form a 64 bit timer value. The Fabric Controller is the main timer used by this project, luckily the GAP SDK provides a simple wrapper for reading the current timer value, rt_time_get_us().
 
 ## UART
 
