@@ -17,6 +17,7 @@ As the GAP8 contains some nonstandard extensions, GreenWaves Technologies mainta
 Returning to GreenWaves' GCC, the main features to be aware of is that, first, one can specify the number of cluster cores available for cross compilation using the -mPE=X CFLAG, with X being the number of cluster cores one wants to use, it can range anywhere between 1 and 8. 
 
 ![](InlineImages/core_cycles.png)
+
 *The effect that changing the number of available cluster cores using the -mPE flag had on the runtime of a neural network*
 
 Something else is that especially when doing anything using AutoTiler generated code, including neural networks, it's highly recommended that your compiler optimization level is set to -O3. Modern compilers are extremely good at performing loop nest optimization, vectorization, and loop unrolling, and this is absolutely noticeable when working with the compute kernels that GreenWaves offers, as GCC will not only perform its own standard passes, but it will make aggressive use of the GAP8's custom instructions to eke out as much performance as possible. As an example, in one case, changing the compiler optimization level from -O0 to -O3 improved the performance of a neural network executing on the GAP8 by over two times, with it dropping from roughly 170 million cycles to operate to completion, to only around 70 million cycles. 
@@ -54,8 +55,17 @@ NNTool is a program GreenWaves developed that assists in the process of exportin
 
 ![](InlineImages/gapflow.png)
 
+NNTool can be run either as a CLI program that the user can interact with and run commands in, or it can be scripted using the same commands, just in a text file that is passed into NNTool's argv. Both this project and the GAP SDK's Makefiles take full advantage of the scripting functionality, and it's been automated as part of the build process in both. 
 
+NNTool provides a plethora of options for working with neural networks, it performs several steps such as trimming or combining unsupported or redundant neural network layers, and it also handles quantization settings automatically, which is important for embedded devices, especially ones like the GAP8 which don't have floating point support in hardware. 
+
+For more information about NNTool and it's supported operations, visit these two links, [the NN Quick Start Guide](https://greenwaves-technologies.com/sdk-manuals/nn_quick_start_guide/), and [the NNTool Docs](https://github.com/GreenWaves-Technologies/gap_sdk/tree/master/tools/nntool).
 
 ## GoogleTest
 
 Currently GoogleTest isn't used by this project at all, although, in the future, it'd be useful to use it to provide source code coverage and verify program behavior on host computers rather than having to run the full program in GVSOC or on a physical AI-deck device.
+
+
+## Meson & Ninja
+
+Unlike the standard GAP SDK, this project uses Meson to generate a Ninja build system for compiling both the host applications such as the AutoTiler code generators, and also the actual GAP8 source files. This has its benefits and downsides, in terms of benefits, it allows significantly greater flexibility, as every aspect of the build can be customized. It also allows for better compile parallelization compared to Make, and is [faster than Make](http://neugierig.org/software/chromium/notes/2011/02/ninja.html). Of course the downside is that moving to newer GAP SDK revisions is significantly more painful, as it'll be on this project to figure out what's changed in the GAP SDK between releases, i.e., have any source code directories been moved, or is there a new compiler flag we need to pass? 
