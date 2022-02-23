@@ -22,6 +22,7 @@ void program_main_2()
     Core::Device::CPU::set_cluster_frequency(175);
     Core::Heap::L2Heap l2heap;
     Core::Heap::L1Heap l1heap;
+    Core::Device::Timer timer;
 
 #ifdef BENCHMARKING_POWER
     auto* uart_or_error = Core::Device::UART::initialize();
@@ -49,13 +50,12 @@ void program_main_2()
     printf("Initialized WIFI\n");
 
     auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 200, 200);
+    //auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 324, 244);
     if (!frame_streamer_or_error)
         assert_not_reached_gap8();
     auto& frame_streamer = *frame_streamer_or_error;
     printf("Initialized frame streamer\n");
-#endif // BENCHMARKING_WIFI_STREAMER
 
-#ifdef BENCHMARKING_WIFI_STREAMER
     auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
         camera.get_image_width() * camera.get_image_height());
 #else
@@ -77,7 +77,6 @@ void program_main_2()
     Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
 
 #ifdef BENCHMARKING_MODEL
-    Core::Device::Timer timer;
 #    ifdef BENCHMARKING_POWER
     uart.write("+");
 #    endif // BENCHMARKING_POWER
@@ -91,14 +90,18 @@ void program_main_2()
     printf("Elapsed Time: %u uSec, FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", total_time, Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
 #endif // BENCHMARKING_MODEL
 
-#if defined(BENCHMARKING_WIFI_STREAMER) && defined(BENCHMARKING_POWER)
-    uart.write("+");
+#if defined(BENCHMARKING_WIFI_STREAMER)
+    pi_task_t* streamer_task;
     while (true) {
-        camera.capture_image(camera_frame_buffer);
-        assert_gap8(cluster.submit_kernel_synchronously(cm));
-        frame_streamer.send_frame(model_frame_buffer);
+        camera.stream(camera_frame_buffer, [&]() {
+            assert_gap8(cluster.submit_kernel_synchronously(cm));
+            for (int i = 0; i < 2; i++) {
+                assert_gap8(streamer_task = frame_streamer.send_frame_async(model_frame_buffer, [] {}));
+                pi_task_wait_on(streamer_task);
+            }
+        });
     }
-#endif //BENCHMARKING_WIFI_STREAMER && BENCHMARKING_POWER
+#endif //BENCHMARKING_WIFI_STREAMER
     l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
     l2heap.deallocate(model_frame_buffer.data(), 200 * 200);
     assert_gap8(cluster.close_cluster());

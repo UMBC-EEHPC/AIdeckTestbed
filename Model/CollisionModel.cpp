@@ -19,11 +19,11 @@ volatile static void cluster(void* arg)
 #ifdef BENCHMARKING_MODEL
     gap_cl_starttimer();
     gap_cl_resethwtimer();
-#endif
+#endif // BENCHMARKING_MODEL
 
-#ifdef BENCHMARKING_POWER
+#if defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
     while (true) {
-#endif
+#endif // defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
 
 #ifdef BENCHMARKING_WIFI_STREAMER
         ResizeImage(Img_In, Img_Resized);
@@ -31,10 +31,10 @@ volatile static void cluster(void* arg)
 
 #ifdef BENCHMARKING_MODEL
         ptq_int8CNN(Img_Resized, reinterpret_cast<signed char*>(&ResOut));
-#endif
-#ifdef BENCHMARKING_POWER
+#endif // BENCHMARKING_MODEL
+#if defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
     }
-#endif
+#endif // defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)
