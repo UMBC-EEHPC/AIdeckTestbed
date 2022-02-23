@@ -1,5 +1,7 @@
 # AIdeckTestbed
 
+[***Previous work***](https://github.com/GriffinBonner/ai-deck_obs_native)
+
 Testbed for experimentation on the GAP8-based AI-deck platform
 
 ## About
