@@ -91,14 +91,10 @@ void program_main_2()
 #endif // BENCHMARKING_MODEL
 
 #if defined(BENCHMARKING_WIFI_STREAMER)
-    pi_task_t* streamer_task;
     while (true) {
         camera.stream(camera_frame_buffer, [&]() {
             assert_gap8(cluster.submit_kernel_synchronously(cm));
-            for (int i = 0; i < 2; i++) {
-                assert_gap8(streamer_task = frame_streamer.send_frame_async(model_frame_buffer, [] {}));
-                pi_task_wait_on(streamer_task);
-            }
+            assert_gap8(frame_streamer.send_frame(model_frame_buffer));
         });
     }
 #endif //BENCHMARKING_WIFI_STREAMER
