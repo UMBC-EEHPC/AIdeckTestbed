@@ -24,19 +24,6 @@ void program_main_2()
     Core::Heap::L1Heap l1heap;
     Core::Device::Timer timer;
 
-#ifdef BENCHMARKING_POWER
-    auto* uart_or_error = Core::Device::UART::initialize();
-    if (!uart_or_error)
-        assert_not_reached_gap8();
-    auto& uart = *uart_or_error;
-    printf("Initialized UART\n");
-
-    uart.write("+");
-    rt_time_wait_us(1000000);
-    uart.write("-");
-#endif // BENCHMARKING_POWER
-
-#ifdef BENCHMARKING_WIFI_STREAMER
     auto* camera_or_error = Core::Device::Camera::initialize();
     if (!camera_or_error)
         assert_not_reached_gap8();
@@ -50,7 +37,6 @@ void program_main_2()
     printf("Initialized WIFI\n");
 
     auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 200, 200);
-    //auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 324, 244);
     if (!frame_streamer_or_error)
         assert_not_reached_gap8();
     auto& frame_streamer = *frame_streamer_or_error;
@@ -58,11 +44,8 @@ void program_main_2()
 
     auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
         camera.get_image_width() * camera.get_image_height());
-#else
-    auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
-        324 * 244);
-#endif // BENCHMARKING_WIFI_STREAMER
     printf("Allocated camera output frame buffer\n");
+
     auto model_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
         200 * 200);
     printf("Allocated neural network input frame buffer\n");
@@ -76,28 +59,12 @@ void program_main_2()
 
     Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
 
-#ifdef BENCHMARKING_MODEL
-#    ifdef BENCHMARKING_POWER
-    uart.write("+");
-#    endif // BENCHMARKING_POWER
-    timer.reset_timer();
-    assert_gap8(cluster.submit_kernel_synchronously(cm));
-    unsigned int total_time = timer.get_elapsed_time_us();
-#    ifdef BENCHMARKING_POWER
-    uart.write("-");
-#    endif // BENCHMARKING_POWER
-    cm.close_model();
-    printf("Elapsed Time: %u uSec, FC Frequency as %u MHz, CL Frequency = %u MHz, PERIIPH Frequency = %u\n", total_time, Core::Device::CPU::get_fabric_frequency(), Core::Device::CPU::get_cluster_frequency(), Core::Device::CPU::get_peripheral_frequency());
-#endif // BENCHMARKING_MODEL
-
-#if defined(BENCHMARKING_WIFI_STREAMER)
     while (true) {
         camera.stream(camera_frame_buffer, [&]() {
             assert_gap8(cluster.submit_kernel_synchronously(cm));
             assert_gap8(frame_streamer.send_frame(model_frame_buffer));
         });
     }
-#endif //BENCHMARKING_WIFI_STREAMER
     l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
     l2heap.deallocate(model_frame_buffer.data(), 200 * 200);
     assert_gap8(cluster.close_cluster());
