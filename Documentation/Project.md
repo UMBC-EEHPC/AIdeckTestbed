@@ -18,6 +18,8 @@ Gapack/ - barely-even-started linear algebra library, not used in this project
 Model/ - contains everything related to the neural net models
 Model/Data/ - contains some miscellaneous required headers, some scripts for exporting the models to the AI-deck, and code required to generate the bilinear resize kernel for the AI-deck
 
+PowerMeter/ - Contains some Arduino code for measuring power draw thru the INA219 module, plus some Python code for cleaning up the text output and getting the data we (generally) need
+
 Scripts/ - contains some helper scripts used by Meson during compilation
 
 Toolchain/ - contains everything necessary to download, compile, and install GCC, Binutils, and the GAP8 SDK inside this repo directory
