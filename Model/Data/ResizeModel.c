@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     SetGeneratedFilesNames("ResizeKernels.c", "ResizeKernels.h");
     LoadResizeLibrary();
 
-    GenerateResize("ResizeImage", 324, 244, 200, 200);
+    GenerateResize("ResizeImage", 324, 244, 80, 60);
 
     GenerateTilingCode();
     return 0;

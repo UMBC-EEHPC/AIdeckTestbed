@@ -49,8 +49,7 @@ void program_main_2()
     auto& wifi = *wifi_or_error;
     printf("Initialized WIFI\n");
 
-    auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 200, 200);
-    //auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 324, 244);
+    auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 80, 60);
     if (!frame_streamer_or_error)
         assert_not_reached_gap8();
     auto& frame_streamer = *frame_streamer_or_error;
@@ -64,7 +63,7 @@ void program_main_2()
 #endif // BENCHMARKING_WIFI_STREAMER
     printf("Allocated camera output frame buffer\n");
     auto model_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
-        200 * 200);
+        80 * 60);
     printf("Allocated neural network input frame buffer\n");
 
     auto* cluster_or_error = Core::Device::Cluster::initialize();
@@ -102,8 +101,8 @@ void program_main_2()
         });
     }
 #endif //BENCHMARKING_WIFI_STREAMER
+    l2heap.deallocate(model_frame_buffer.data(), 80 * 60);
     l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
-    l2heap.deallocate(model_frame_buffer.data(), 200 * 200);
     assert_gap8(cluster.close_cluster());
 }
 

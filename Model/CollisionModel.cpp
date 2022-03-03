@@ -6,13 +6,30 @@ extern "C" L2_MEM AT_L2_POINTER ptq_int8_L2_Memory;
 extern "C" L1_CL_MEM AT_L1_POINTER Resize_L1_Memory;
 extern "C" L2_MEM AT_L2_POINTER Resize_L2_Memory;
 
+extern "C" {
+
+extern int ptq_int8CNN_Construct();
+extern int ptq_int8CNN_Destruct();
+extern int ptq_int8CNN(unsigned char* __restrict__ Input_1,
+    signed char* __restrict__ Input_2,
+    signed char* __restrict__ Output_1,
+    signed char* __restrict__ Output_2);
+extern unsigned int AT_GraphPerf[9];
+extern char* AT_GraphNodeNames[9];
+extern unsigned int AT_GraphOperInfosNames[9];
+extern void ResizeImage(unsigned char* In, unsigned char* Out);
+}
+
 using etl::vector_ext;
 
 namespace Model {
 
-PI_L2 uint8_t ResOut;
-PI_L2 uint8_t* Img_In;
-PI_L2 uint8_t* Img_Resized;
+PI_L2 static uint8_t* original_image;
+PI_L2 static uint8_t* resized_image;
+PI_L2 static int8_t instruction_vector[128];
+
+PI_L2 static int8_t output;
+PI_L2 static int8_t categorical_output[3];
 
 volatile static void cluster(void* arg)
 {
@@ -21,20 +38,13 @@ volatile static void cluster(void* arg)
     gap_cl_resethwtimer();
 #endif // BENCHMARKING_MODEL
 
-#if defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
-    while (true) {
-#endif // defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
-
 #ifdef BENCHMARKING_WIFI_STREAMER
-        ResizeImage(Img_In, Img_Resized);
+    ResizeImage(original_image, resized_image);
 #endif
 
 #ifdef BENCHMARKING_MODEL
-        ptq_int8CNN(Img_Resized, reinterpret_cast<signed char*>(&ResOut));
+    ptq_int8CNN(resized_image, instruction_vector, &output, categorical_output);
 #endif // BENCHMARKING_MODEL
-#if defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
-    }
-#endif // defined(BENCHMARKING_POWER) && !defined(BENCHMARKING_WIFI_STREAMER)
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)
@@ -42,8 +52,8 @@ CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8
 {
     assert_gap8(open_model());
 
-    Img_In = frame_data.data();
-    Img_Resized = frame_resized.data();
+    original_image = frame_data.data();
+    resized_image = frame_resized.data();
 
     Resize_L1_Memory = ptq_int8_L1_Memory;
     Resize_L2_Memory = ptq_int8_L2_Memory;
@@ -63,15 +73,15 @@ void CollisionModel::close_model()
     m_is_model_open = false;
 #ifdef BENCHMARKING_MODEL
     unsigned int TotalCycles = 0, TotalOper = 0;
-    printf("Value is: %u\n", ResOut);
     printf("\n");
-    for (int i = 0; i < (sizeof(AT_GraphPerf) / sizeof(unsigned int)); i++) {
-        //printf("%45s: Cycles: %10d, Operations: %10d, Operations/Cycle: %f\n", AT_GraphNodeNames[i], AT_GraphPerf[i], AT_GraphOperInfosNames[i], ((float) AT_GraphOperInfosNames[i])/ AT_GraphPerf[i]);
+    printf("\n");
+    for (unsigned int i = 0; i < (sizeof(AT_GraphPerf) / sizeof(unsigned int)); i++) {
+        printf("%45s: Cycles: %10u, Operations: %10u, Operations/Cycle: %f\n", AT_GraphNodeNames[i], AT_GraphPerf[i], AT_GraphOperInfosNames[i], ((float)AT_GraphOperInfosNames[i]) / AT_GraphPerf[i]);
         TotalCycles += AT_GraphPerf[i];
         TotalOper += AT_GraphOperInfosNames[i];
     }
     printf("\n");
-    printf("%35s: %10u, Operation: %10u, Operation/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float)TotalOper) / TotalCycles);
+    printf("%45s: Cycles: %10u, Operations: %10u, Operations/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float)TotalOper) / TotalCycles);
     printf("\n");
 #endif
 }
