@@ -34,7 +34,7 @@ GAP8_C_Flags = [
     '-DAT_INPUT_WIDTH=',
     '-DAT_INPUT_COLORS=',
     '-DSTACK_SIZE=6144',
-    '-DSLAVE_STACK_SIZE=3072',
+    '-DSLAVE_STACK_SIZE=1024',
     '-DAT_IMAGE=',
     '-fstack-protector-strong',
     '-DCONFIG_AI_DECK',
@@ -203,8 +203,8 @@ GenTile_Sources = files(
 Prog_NNTOOL = find_program('nntool')
 Prog_size = find_program('riscv32-unknown-elf-size')
 
-L1_Reserved_Memory = '30000'
-L2_Reserved_Memory = '190000'
+L1_Reserved_Memory = '50000'
+L2_Reserved_Memory = '300000'
 L3_Reserved_Memory = '8000000'
 
 subdir('Core')

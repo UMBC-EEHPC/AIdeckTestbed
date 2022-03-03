@@ -1,5 +1,7 @@
 #pragma once
 
+#define BENCHMARKING_324_244_SIZE
+
 #ifdef __PLATFORM_GVSOC__
 #    define BENCHMARKING_MODEL
 #else
