@@ -52,11 +52,9 @@ FrameStreamer& FrameStreamer::self()
 
 bool FrameStreamer::send_frame(vector_ext<uint8_t>& frame_data)
 {
-    pi_buffer_t buffer;
-
     pi_buffer_init(&m_buffer, PI_BUFFER_TYPE_L2, frame_data.data());
 
-    if (frame_streamer_send(m_frame_streamer_meta, &buffer))
+    if (frame_streamer_send(m_frame_streamer_meta, &m_buffer))
         return false;
     return true;
 }
