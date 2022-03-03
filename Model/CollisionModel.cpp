@@ -40,10 +40,12 @@ volatile static void cluster(void* arg)
 
 #ifdef BENCHMARKING_WIFI_STREAMER
     ResizeImage(original_image, resized_image);
-#endif
+#endif // BENCHMARKING_WIFI_STREAMER
 
 #ifdef BENCHMARKING_MODEL
-    ptq_int8CNN(resized_image, instruction_vector, &output, categorical_output);
+    while (true) {
+        ptq_int8CNN(resized_image, instruction_vector, &output, categorical_output);
+    }
 #endif // BENCHMARKING_MODEL
 }
 
@@ -83,7 +85,7 @@ void CollisionModel::close_model()
     printf("\n");
     printf("%45s: Cycles: %10u, Operations: %10u, Operations/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float)TotalOper) / TotalCycles);
     printf("\n");
-#endif
+#endif // BENCHMARKING_MODEL
 }
 
 CollisionModel::~CollisionModel()

@@ -100,7 +100,7 @@ void program_main_2()
             }
         });
     }
-#endif //BENCHMARKING_WIFI_STREAMER
+#endif // BENCHMARKING_WIFI_STREAMER
     l2heap.deallocate(model_frame_buffer.data(), 80 * 60);
     l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
     assert_gap8(cluster.close_cluster());
