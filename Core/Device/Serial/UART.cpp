@@ -18,7 +18,7 @@ static UART* g_uart = nullptr;
 
     g_uart->m_config.enable_tx = 1;
     g_uart->m_config.enable_rx = 0;
-    g_uart->m_config.baudrate_bps = 9600;
+    g_uart->m_config.baudrate_bps = 115200;
 
     pi_open_from_conf(&(g_uart->m_uart), &(g_uart->m_config));
 

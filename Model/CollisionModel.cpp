@@ -6,6 +6,8 @@ extern "C" L2_MEM AT_L2_POINTER ptq_int8_L2_Memory;
 extern "C" L1_CL_MEM AT_L1_POINTER Resize_L1_Memory;
 extern "C" L2_MEM AT_L2_POINTER Resize_L2_Memory;
 
+extern bool g_will_collide;
+
 using etl::vector_ext;
 
 namespace Model {
@@ -16,9 +18,11 @@ PI_L2 uint8_t* Img_Resized;
 
 volatile static void cluster(void* arg)
 {
-    ResizeImage(Img_In, Img_Resized);
+    ptq_int8CNN(Img_In, reinterpret_cast<signed char*>(&ResOut));
 
-    ptq_int8CNN(Img_Resized, reinterpret_cast<signed char*>(&ResOut));
+    printf("%d\n", ResOut);
+
+    g_will_collide = (ResOut != 217) || (ResOut != 218);
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)

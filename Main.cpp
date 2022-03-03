@@ -13,6 +13,11 @@
 #include <Model/CollisionModel.h>
 #include <stdint.h>
 
+#define US_PER_SEC 1000000
+#define SECS_ACTIVE 25
+
+bool g_will_collide = false;
+
 void program_main_2()
 {
     printf("Initializing devices\n");
@@ -23,6 +28,12 @@ void program_main_2()
     Core::Heap::L2Heap l2heap;
     Core::Heap::L1Heap l1heap;
     Core::Device::Timer timer;
+
+    auto* uart_or_error = Core::Device::UART::initialize();
+    if (!uart_or_error)
+        assert_not_reached_gap8();
+    auto& uart = *uart_or_error;
+    printf("Initialized UART\n");
 
     auto* camera_or_error = Core::Device::Camera::initialize();
     if (!camera_or_error)
@@ -36,7 +47,7 @@ void program_main_2()
     auto& wifi = *wifi_or_error;
     printf("Initialized WIFI\n");
 
-    auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 200, 200);
+    auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 324, 244);
     if (!frame_streamer_or_error)
         assert_not_reached_gap8();
     auto& frame_streamer = *frame_streamer_or_error;
@@ -60,13 +71,26 @@ void program_main_2()
     Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
 
     while (true) {
-        camera.stream(camera_frame_buffer, [&]() {
+        /*camera.stream(camera_frame_buffer, [&]() {
             assert_gap8(cluster.submit_kernel_synchronously(cm));
             assert_gap8(frame_streamer.send_frame(model_frame_buffer));
-        });
+
+            if (g_will_collide)
+                uart.write(":");
+            else
+                uart.write("|");
+        });*/
+        camera.capture_image(camera_frame_buffer);
+        assert_gap8(cluster.submit_kernel_synchronously(cm));
+        if (g_will_collide)
+            uart.write(":::");
+        else
+            uart.write("|||");
+
+        assert_gap8(frame_streamer.send_frame(camera_frame_buffer));
     }
-    l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
     l2heap.deallocate(model_frame_buffer.data(), 200 * 200);
+    l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
     assert_gap8(cluster.close_cluster());
 }
 
