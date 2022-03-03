@@ -53,10 +53,8 @@ CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8
 
 [[nodiscard]] bool CollisionModel::open_model()
 {
-    bool status = Core::Device::Cluster::self().is_cluster_open() && !ptq_int8CNN_Construct();
-    if (status)
-        m_is_model_open = true;
-    return status;
+    m_is_model_open = Core::Device::Cluster::self().is_cluster_open() && !ptq_int8CNN_Construct();
+    return m_is_model_open;
 }
 
 void CollisionModel::close_model()
