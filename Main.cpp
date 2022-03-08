@@ -16,7 +16,7 @@
 #define US_PER_SEC 1000000
 #define SECS_ACTIVE 25
 
-bool g_will_collide = false;
+uint8_t g_net_decision = 0;
 
 void program_main_2()
 {
@@ -71,21 +71,9 @@ void program_main_2()
     Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
 
     while (true) {
-        /*camera.stream(camera_frame_buffer, [&]() {
-            assert_gap8(cluster.submit_kernel_synchronously(cm));
-            assert_gap8(frame_streamer.send_frame(model_frame_buffer));
-
-            if (g_will_collide)
-                uart.write(":");
-            else
-                uart.write("|");
-        });*/
         camera.capture_image(camera_frame_buffer);
         assert_gap8(cluster.submit_kernel_synchronously(cm));
-        if (g_will_collide)
-            uart.write(":::");
-        else
-            uart.write("|||");
+        uart.writeChar(g_net_decision);
 
         assert_gap8(frame_streamer.send_frame(camera_frame_buffer));
     }

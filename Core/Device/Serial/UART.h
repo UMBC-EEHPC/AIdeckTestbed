@@ -19,6 +19,7 @@ class UART {
     SINGLETON_CLASS(UART)
 public:
     int write(char const* string, ...);
+    int writeChar(char c);
 
     ~UART();
 

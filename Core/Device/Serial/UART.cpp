@@ -5,6 +5,7 @@ using namespace etl;
 namespace Core::Device {
 
 static UART* g_uart = nullptr;
+static PI_L2 uint8_t character;
 
 [[nodiscard]] UART* UART::initialize()
 {
@@ -50,6 +51,17 @@ int UART::write(char const* string, ...)
 
     if (pi_uart_write(&m_uart, m_buffer, len))
         printf("\nFailed while writing %s:\n", m_buffer);
+
+    return 0;
+}
+
+int UART::writeChar(char c)
+{
+    character = c;
+    if (pi_uart_write(&m_uart, &character, 1)) {
+        printf("\nFailed while writing %s:\n", m_buffer);
+        return -1;
+    }
 
     return 0;
 }

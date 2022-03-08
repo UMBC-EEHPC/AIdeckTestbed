@@ -6,7 +6,7 @@ extern "C" L2_MEM AT_L2_POINTER ptq_int8_L2_Memory;
 extern "C" L1_CL_MEM AT_L1_POINTER Resize_L1_Memory;
 extern "C" L2_MEM AT_L2_POINTER Resize_L2_Memory;
 
-extern bool g_will_collide;
+extern uint8_t g_net_decision;
 
 using etl::vector_ext;
 
@@ -22,7 +22,7 @@ volatile static void cluster(void* arg)
 
     printf("%d\n", ResOut);
 
-    g_will_collide = (ResOut != 217) || (ResOut != 218);
+    g_net_decision = ResOut;
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)
