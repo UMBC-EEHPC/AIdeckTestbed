@@ -1,3 +1,0 @@
-Sources += files(
-    'Matrix.cpp'
-)

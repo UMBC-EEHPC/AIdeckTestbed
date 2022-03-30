@@ -9,7 +9,6 @@
 #include <Core/Heap/L1Heap.h>
 #include <Core/Heap/L2Heap.h>
 #include <Core/Support/gap_sdk.h>
-#include <Gapack/Matrix.h>
 #include <Model/CollisionModel.h>
 #include <stdint.h>
 

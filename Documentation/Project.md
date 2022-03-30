@@ -13,8 +13,6 @@ Core/Heap/ - contains some C++ wrappers for heap allocation
 Core/Support/ - contains some miscellaneous headers and miscellaneous C++ runtime functions
 Core/Sync/ - contains some C++ wrappers for PMSIS synchronization primitives
 
-Gapack/ - barely-even-started linear algebra library, not used in this project
-
 Model/ - contains everything related to the neural net models
 Model/Data/ - contains some miscellaneous required headers, some scripts for exporting the models to the AI-deck, and code required to generate the bilinear resize kernel for the AI-deck
 

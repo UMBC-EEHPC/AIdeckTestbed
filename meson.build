@@ -208,7 +208,6 @@ L2_Reserved_Memory = '190000'
 L3_Reserved_Memory = '8000000'
 
 subdir('Core')
-subdir('Gapack')
 subdir('Model')
 
 Lib_AutoTilerGen = static_library(
