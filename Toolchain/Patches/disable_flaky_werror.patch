@@ -1,21 +1,21 @@
 diff --git a/Makefile b/Makefile
-index 5cf96bf1..f596a5d2 100644
+index da17c1fe..2662e51c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -178,7 +178,7 @@ openocd.checkout:
  	fi
  
  openocd.build: openocd.checkout
--	cd utils/openocd && ./bootstrap && ./configure --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && make && make install
-+	cd utils/openocd && ./bootstrap && ./configure --disable-werror --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && make && make install
+-	cd utils/openocd && ./bootstrap && ./configure --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && $(MAKE) && $(MAKE) install
++	cd utils/openocd && ./bootstrap && ./configure --disable-werror --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && $(MAKE) && $(MAKE) install
  
  openocd.clean:
  	rm -rf $(INSTALL_DIR)/openocd tools/openocd
 diff --git a/gap8/gap8.mk b/gap8/gap8.mk
-index a4b7e977..054d7fda 100644
+index f743412e..62f2ec5d 100644
 --- a/gap8/gap8.mk
 +++ b/gap8/gap8.mk
-@@ -180,7 +180,7 @@ openocd.checkout:
+@@ -173,7 +173,7 @@ openocd.checkout:
  
  openocd.build: openocd.checkout
  	cd utils/gap8-openocd && ./bootstrap
