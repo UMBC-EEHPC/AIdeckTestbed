@@ -1,24 +1,5 @@
 #include "CollisionModel.h"
-
-extern "C" L1_CL_MEM AT_L1_POINTER ptq_int8_L1_Memory;
-extern "C" L2_MEM AT_L2_POINTER ptq_int8_L2_Memory;
-
-extern "C" L1_CL_MEM AT_L1_POINTER Resize_L1_Memory;
-extern "C" L2_MEM AT_L2_POINTER Resize_L2_Memory;
-
-extern "C" {
-
-extern int ptq_int8CNN_Construct();
-extern int ptq_int8CNN_Destruct();
-extern int ptq_int8CNN(unsigned char* __restrict__ Input_1,
-    signed char* __restrict__ Input_2,
-    signed char* __restrict__ Output_1,
-    signed char* __restrict__ Output_2);
-extern unsigned int AT_GraphPerf[9];
-extern char* AT_GraphNodeNames[9];
-extern unsigned int AT_GraphOperInfosNames[9];
-extern void ResizeImage(unsigned char* In, unsigned char* Out);
-}
+#include "CollisionModelGenerated.inc"
 
 using etl::vector_ext;
 
@@ -26,10 +7,8 @@ namespace Model {
 
 PI_L2 static uint8_t* original_image;
 PI_L2 static uint8_t* resized_image;
-PI_L2 static int8_t instruction_vector[128];
 
 PI_L2 static int8_t output;
-PI_L2 static int8_t categorical_output[3];
 
 volatile static void cluster(void* arg)
 {
@@ -38,13 +17,11 @@ volatile static void cluster(void* arg)
     gap_cl_resethwtimer();
 #endif // BENCHMARKING_MODEL
 
-#ifdef BENCHMARKING_WIFI_STREAMER
     ResizeImage(original_image, resized_image);
-#endif // BENCHMARKING_WIFI_STREAMER
 
 #ifdef BENCHMARKING_MODEL
     while (true) {
-        ptq_int8CNN(resized_image, instruction_vector, &output, categorical_output);
+        ptq_int8CNN(resized_image, &output);
     }
 #endif // BENCHMARKING_MODEL
 }

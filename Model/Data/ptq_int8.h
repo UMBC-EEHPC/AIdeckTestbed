@@ -1,8 +1,4 @@
-
-#ifndef __MNIST_H__
-#define __MNIST_H__
-
-#define __PREFIX(x) ptq_int8##x
+#pragma once
 
 #include "Gap.h"
 
@@ -18,8 +14,4 @@ extern AT_HYPERFLASH_FS_EXT_ADDR_TYPE ptq_int8_L3_Flash;
 
 #if defined(USE_HYPER)
 extern AT_HYPERFLASH_FS_EXT_ADDR_TYPE ptq_int8_L3_Flash;
-#elif defined(USE_SPI)
-extern AT_QSPIFLASH_FS_EXT_ADDR_TYPE ptq_int8_L3_Flash;
-#endif // USE_HYPER
-
-#endif // __MNIST_H__
+#endif
