@@ -63,11 +63,9 @@ void program_main_2()
 #endif // BENCHMARKING_WIFI_STREAMER
     printf("Allocated camera output frame buffer\n");
 
-#ifndef BENCHMARKING_324_244_SIZE
     auto model_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
         80 * 60);
     printf("Allocated neural network input frame buffer\n");
-#endif // !BENCHMARKING_324_244_SIZE
 
     auto* cluster_or_error = Core::Device::Cluster::initialize();
     if (!cluster_or_error)
@@ -76,11 +74,7 @@ void program_main_2()
     printf("Initialized cluster\n");
     assert_gap8(cluster.open_cluster());
 
-#ifndef BENCHMARKING_324_244_SIZE
     Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
-#else
-    Model::CollisionModel cm(camera_frame_buffer, camera_frame_buffer);
-#endif // !BENCHMARKING_324_244_SIZE
 
 #ifdef BENCHMARKING_MODEL
 #    ifdef BENCHMARKING_POWER
@@ -101,17 +95,13 @@ void program_main_2()
     while (true) {
         camera.stream(camera_frame_buffer, [&]() {
             assert_gap8(cluster.submit_kernel_synchronously(cm));
-            for (int i = 0; i < 2; i++) {
-                assert_gap8(streamer_task = frame_streamer.send_frame_async(model_frame_buffer, [] {}));
-                pi_task_wait_on(streamer_task);
-            }
+            assert_gap8(streamer_task = frame_streamer.send_frame_async(model_frame_buffer, [] {}));
+            pi_task_wait_on(streamer_task);
         });
     }
 #endif // BENCHMARKING_WIFI_STREAMER
 
-#ifndef BENCHMARKING_324_244_SIZE
     l2heap.deallocate(model_frame_buffer.data(), 80 * 60);
-#endif // !BENCHMARKING_324_244_SIZE
     l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
     assert_gap8(cluster.close_cluster());
 }
