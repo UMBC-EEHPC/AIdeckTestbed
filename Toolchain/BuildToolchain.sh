@@ -16,11 +16,7 @@ PREFIX="$DIR/Local"
 
 MAKE=make
 MD5SUM=md5sum
-if [ "$(uname)" = "Darwin" ]; then
-NPROC="sysctl -n hw.logicalcpu"
-else
 NPROC=nproc
-fi
 
 echo PREFIX is "$PREFIX"
 
@@ -58,21 +54,10 @@ GTEST_PKG="${GTEST_NAME}.tar.gz"
 GTEST_BASE_URL="https://github.com/google/googletest/archive/refs/tags"
 
 ANACONDA_VERSION="3-2020.07"
-if [ "$(uname)" = "Linux" ]; then
 ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-Linux-x86_64"
 ANACONDA_MD5SUM="1046c40a314ab2531e4c099741530ada"
-elif [ "$(uname)" = "Darwin" ]; then
-ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-MacOSX-x86_64"
-ANACONDA_MD5SUM="50f20c90b8b5bfdc09759c09e32dce68"
-fi
 ANACONDA_PKG="${ANACONDA_NAME}.sh"
 ANACONDA_BASE_URL="https://repo.anaconda.com/archive"
-
-GAP_SDK_BASE_URL="https://github.com/GreenWaves-Technologies/gap_sdk.git"
-GAP_SDK_TAG_NAME="release-v4.9.0"
-
-ETL_BASE_URL="https://github.com/ETLCPP/etl.git"
-ETL_TAG_NAME="20.20.0"
 
 # === DOWNLOAD AND PATCH ===
 
@@ -147,12 +132,6 @@ pushd "$DIR/Tarballs"
         echo "Skipped downloading anaconda"
     fi
 
-    if [ "$(uname)" = "Darwin" ]; then
-        pushd "$GCC_PKG"
-        ./contrib/download_prerequisites
-        popd
-    fi
-
     if [ ! -d $GTEST_NAME ]; then
         echo "Extracting googletest..."
         tar -xzf $GTEST_PKG
@@ -212,15 +191,6 @@ pushd "$DIR/Build/"
                                                 --disable-werror \
                                                 --disable-gdb \
                                                 || exit 1
-        if [ "$(uname)" = "Darwin" ]; then
-            # under macOS generated makefiles are not resolving the "intl"
-            # dependency properly to allow linking its own copy of
-            # libintl when building with --enable-shared.
-            "$MAKE" -j "$MAKEJOBS" || true
-            pushd intl
-            "$MAKE" all-yes
-            popd
-        fi
         echo "XXX build binutils"
         "$MAKE" -j "$MAKEJOBS" || exit 1
         echo "XXX install binutils"
@@ -311,16 +281,9 @@ popd
 
 cp "$DIR"/Tarballs/"$PULP_RISCV_GNU_TOOLCHAIN_NAME"/riscv.ld "$PREFIX"/riscv32-unknown-elf/lib
 
-git clone "$ETL_BASE_URL"
-pushd "$DIR/etl"
-git checkout -f "$ETL_TAG_NAME"
-popd
-
 # === DOWNLOAD OFFICIAL SDK ===
 echo "XXX install nntools requirements"
-git clone "$GAP_SDK_BASE_URL"
 pushd "$DIR/gap_sdk"
-    git checkout -f "$GAP_SDK_TAG_NAME"
 
     export GAP_RISCV_GCC_TOOLCHAIN="$PREFIX"
     
