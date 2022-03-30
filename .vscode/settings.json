@@ -68,7 +68,11 @@
         "__availability": "cpp",
         "__bit_reference": "cpp",
         "filesystem": "cpp",
-        "pulp.h": "c"
+        "pulp.h": "c",
+        "ptq_int8.h": "c",
+        "transport.h": "c",
+        "resizegenerator.h": "c",
+        "*.inc": "c"
     },
     "files.exclude": {
         "Toolchain/Build": true,

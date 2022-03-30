@@ -1,14 +1,12 @@
 #pragma once
 
-#define BENCHMARKING_324_244_SIZE
-
 #ifdef __PLATFORM_GVSOC__
 #    define BENCHMARKING_MODEL
 #else
-//#    define BENCHMARKING_WIFI_STREAMER
+#    define BENCHMARKING_WIFI_STREAMER
 
-#    define BENCHMARKING_MODEL
-#    define BENCHMARKING_POWER
+//#    define BENCHMARKING_MODEL
+//#    define BENCHMARKING_POWER
 
 #    ifdef BENCHMARKING_WIFI_STREAMER
 #        define BENCHMARKING_POWER
