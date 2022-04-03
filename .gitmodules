@@ -1,6 +1,7 @@
 [submodule "Toolchain/gap_sdk"]
 	path = Toolchain/gap_sdk
 	url = https://github.com/GreenWaves-Technologies/gap_sdk
+	ignore = all
 [submodule "Toolchain/etl"]
 	path = Toolchain/etl
 	url = https://github.com/ETLCPP/etl.git
