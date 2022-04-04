@@ -2,6 +2,10 @@
 
 Some non-obvious issues that have arisen while writing code for the GAP8...
 
+## JTAG Cable Usage
+
+Bitcraze is working on a method of flashing the GAP8 and NINA OTA using WiFi and/or the Crazyradio, however it's still not fully complete so for now, the JTAG cable is still a necessity for doing much of anything with the AI-deck. Unfortunately, the JTAG cable seems to be a bit buggy, *especially* when taking power measurements. Sometimes the flasher will error out and report it's receiving all zero's or all one's when you attempt to flash an image. Usually when this happens, you'll have to manually kill the various processes launched by the flasher from the terminal, as well as turn off the Crazyflie/AI-deck, disconnect the AI-deck, reconnect it, then turn it back on. However, this doesn't always solve the issue, especially if you have the AI-deck/Crazyflie partly disassembled for taking power measurements. In the latter case, the fix seems to be to effectively pull apart the whole entire power measurement setup, disconnect every wire, and then reconnect it. It's a bit time consuming and annoying, but it seems to be the only effective solution at the moment.  
+
 ## SDK
 
 As mentioned within [Toolchain.md](Toolchain.md), don't use the Bitcraze Docker image if you intend on doing anything with neural networks, the version of NNTool and AutoTiler that the Docker image ships with are out of date and have their fair share of bugs. 

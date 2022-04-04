@@ -69,3 +69,7 @@ Currently GoogleTest isn't used by this project at all, although, in the future,
 ## Meson & Ninja
 
 Unlike the standard GAP SDK, this project uses Meson to generate a Ninja build system for compiling both the host applications such as the AutoTiler code generators, and also the actual GAP8 source files. This has its benefits and downsides, in terms of benefits, it allows significantly greater flexibility, as every aspect of the build can be customized. It also allows for better compile parallelization compared to Make, and is [faster than Make](http://neugierig.org/software/chromium/notes/2011/02/ninja.html). Of course the downside is that moving to newer GAP SDK revisions is significantly more painful, as it'll be on this project to figure out what's changed in the GAP SDK between releases, i.e., have any source code directories been moved, or is there a new compiler flag we need to pass? 
+
+## NINA & Crazyflie Programming
+
+As of right now, this project only really contains code and a toolchain setup for the GAP8 processor. As such, if you want to write code for the NINA or the Crazyflie's STM32, you'll need to download their SDK's and toolchains separately.

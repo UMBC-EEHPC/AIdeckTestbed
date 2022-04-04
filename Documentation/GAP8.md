@@ -41,7 +41,7 @@ The second is L2 memory, there's a lot more L2 memory than there is L1 memory, w
 
 Finally, there's L3 memory, unlike L2 and L1 memory, this isn't directly addressable by the processor as it's connected either over the HyperBus or the SPI interface. What this means is, you can't just write to L3 memory directly through dereferencing a pointer in C. Instead, you'll have to use the micro-DMA unit to request reads/writes, with the data being read/written through L2 memory, although luckily this is abstracted through the API's available in the GAP SDK. Some other downsides to L3 memory besides it being more difficult to access are that it's both significantly slower than even L2 memory, and it also draws significantly more power, thus it's recommended to disable it as soon as you're done using it. The big upside though, is that one can attach a virtually unlimited amount of memory over L3, dozens of megabytes or more. The neural networks exported from NNTool/AutoTiler tend to make use of it for storing tensors and other associated data that simply can't be fit into L1 or L2 memory all at once.
 
-Having said all of that though, it's probably possible to take advantage of C++'s language features to create an "L3 pointer" that pretends to be a regular memory mapped pointer. 
+Having said all of that though, it's probably possible to take advantage of C++'s language features to create an "L3 pointer" that pretends to be a regular memory mapped pointer, but in actuality is just an operator overload to the L3 DMA operations. 
 
 ## Timers
 
