@@ -60,6 +60,8 @@ ANACONDA_PKG="${ANACONDA_NAME}.sh"
 ANACONDA_BASE_URL="https://repo.anaconda.com/archive"
 
 # === DOWNLOAD AND PATCH ===
+git submodule init
+git submodule update --recursive
 
 pushd "$DIR/Tarballs"
     if [ ! -e $PULP_RISCV_GNU_TOOLCHAIN_PKG ] ; then
