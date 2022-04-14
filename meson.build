@@ -335,7 +335,9 @@ GAP8_Model_Sources = custom_target(
     output: [
         'ptq_int8Kernels.c',
         'ptq_int8Kernels.h',
-        'ptq_int8_L3_Flash_Const.dat'
+        'ptq_int8_L3_Flash_Const.dat',
+        'Expression_Kernels.c',
+        'Expression_Kernels.h'
     ],
     command: [
         GenTile_Binary,

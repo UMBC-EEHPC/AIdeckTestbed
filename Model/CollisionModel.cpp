@@ -8,22 +8,11 @@ namespace Model {
 PI_L2 static uint8_t* original_image;
 PI_L2 static uint8_t* resized_image;
 
-PI_L2 static int8_t output;
+PI_L2 int8_t output;
 
 volatile static void cluster(void* arg)
 {
-#ifdef BENCHMARKING_MODEL
-    gap_cl_starttimer();
-    gap_cl_resethwtimer();
-#endif // BENCHMARKING_MODEL
-
-    ResizeImage(original_image, resized_image);
-
-#ifdef BENCHMARKING_MODEL
-    while (true) {
-        ptq_int8CNN(resized_image, &output);
-    }
-#endif // BENCHMARKING_MODEL
+    ptq_int8CNN(resized_image, &output);
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)
@@ -50,19 +39,6 @@ void CollisionModel::close_model()
 {
     ptq_int8CNN_Destruct();
     m_is_model_open = false;
-#ifdef BENCHMARKING_MODEL
-    unsigned int TotalCycles = 0, TotalOper = 0;
-    printf("\n");
-    printf("\n");
-    for (unsigned int i = 0; i < (sizeof(AT_GraphPerf) / sizeof(unsigned int)); i++) {
-        printf("%45s: Cycles: %10u, Operations: %10u, Operations/Cycle: %f\n", AT_GraphNodeNames[i], AT_GraphPerf[i], AT_GraphOperInfosNames[i], ((float)AT_GraphOperInfosNames[i]) / AT_GraphPerf[i]);
-        TotalCycles += AT_GraphPerf[i];
-        TotalOper += AT_GraphOperInfosNames[i];
-    }
-    printf("\n");
-    printf("%45s: Cycles: %10u, Operations: %10u, Operations/Cycle: %f\n", "Total", TotalCycles, TotalOper, ((float)TotalOper) / TotalCycles);
-    printf("\n");
-#endif // BENCHMARKING_MODEL
 }
 
 CollisionModel::~CollisionModel()
