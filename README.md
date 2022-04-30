@@ -6,6 +6,8 @@
 
 **Faculty:** Dr. Tinoosh Mohsenin <tinoosh@umbc.edu>
 
+**Author:** Edward Humes <ehumes2@umbc.edu>
+
 [***Previous work***](https://github.com/GriffinBonner/ai-deck_obs_native)
 
 ## About
