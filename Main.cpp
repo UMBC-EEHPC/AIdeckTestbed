@@ -12,7 +12,7 @@
 #include <Model/CollisionModel.h>
 #include <stdint.h>
 
-extern PI_L2 int8_t output;
+uint8_t g_net_decision = 0;
 
 void program_main_2()
 {
@@ -57,6 +57,7 @@ void program_main_2()
     while (true) {
         camera.stream(camera_frame_buffer, [&]() {
             assert_gap8(cluster.submit_kernel_synchronously(cm));
+            uart.writeChar(g_net_decision);
         });
     }
 

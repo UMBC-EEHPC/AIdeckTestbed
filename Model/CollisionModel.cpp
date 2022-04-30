@@ -3,16 +3,19 @@
 
 using etl::vector_ext;
 
+extern uint8_t g_net_decision;
+
 namespace Model {
 
 PI_L2 static uint8_t* original_image;
 PI_L2 static uint8_t* resized_image;
 
-PI_L2 int8_t output;
+PI_L2 static uint8_t decision;
 
 volatile static void cluster(void* arg)
 {
-    ptq_int8CNN(resized_image, &output);
+    ptq_int8CNN(original_image, reinterpret_cast<int8_t*>(&decision));
+    g_net_decision = decision;
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)
