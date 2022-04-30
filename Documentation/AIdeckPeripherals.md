@@ -10,8 +10,6 @@ The AI-deck 1.1 targetted by this project comes with a Himax HM01B0-MNA grayscal
 
 The GAP SDK contains bindings for the most generic and common features common to various camera BSP's used with the GAP8 such as turning on the camera, setting the resolution to QVGA/QQVGA, and taking pictures. Anything more though will likely require reading the vendor manual and manipulating hardware registers by hand since the Himax driver within the GAP SDK only really implements features common to other camera BSP's.
 
-In theory the Himax can stream images at approximately 50 FPS, however, in practice, I (Edward) have only really been able to get around 15 FPS out of it, it's unclear whether this is due to limitations in the GAP SDK's driver implementation or if there's something else at play. Regardless, it might be worth it to write a custom driver implementation for the Himax within this project for testing purposes.
-
 ## WiFi
 
 ![](InlineImages/nina_module.png)

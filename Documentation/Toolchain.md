@@ -4,6 +4,10 @@
 
 There's a Docker image published by Bitcraze which has an entire GAP SDK + Toolchain instance setup inside of it, and although it works for simple applications, the GAP SDK it uses is, at least as of the time of writing, extremely out of date by a year or so. This caused plenty of headaches when attempting to begin exporting neural networks for the GAP8, so as a result, it is highly recommended one downloads and installs the latest GAP SDK along with the various bits required to use it, like GreenWaves' compiler and linker.
 
+## Uploading Programs to the AI-deck
+
+Bitcraze is currently working on a method of enabling the user to flash the GAP8 and NINA processors remotely via WiFi, however, it isn't fully functional yet (as of April 30th, 2022), so in order to flash the GAP8, one will need a JTAG cable of some sort to connect to the GAP8 and NINA's headers. 
+
 ## Setting Up The Toolchain
 
 This repository contains a bash script that will automatically download, compile, and install the GAP SDK, GCC, Binutils, Embedded Template Library, and GoogleTest into this project directory. Unfortunately, as the script is somewhat cobbled together just like the rest of the project, it isn't very robust. If the build fails for any reason, you're likely going to either have to continue the rest of the build by hand, or delete the intermediate files and restart the build script.
@@ -35,6 +39,7 @@ The main repository of software for interfacing with the GAP8 as well as the AI-
 This is a full system emulator for the GAP8, and it attempts to provide cycle accurate emulation of not just the GAP8's CV32E40P cores, but also the various internal interfaces and peripherals it contains. It even provides shims for a few common external peripherals such as cameras and displays. It's actually pretty good at emulating the GAP8, and its debugging capabilities aren't too shabby either, it can provide instruction traces of the various cores at runtime, as well as log not just these instruction traces, but also hardware traces to a file to view hardware state at a particular time after execution within the GTKWave tool. 
 
 ![](InlineImages/gvsoc_gtkwave.jpg)
+
 *Viewing a GAP8 trace under GTKWave*
 
 GVSOC does have some limited GDB support, with the ability to inspect registers and memory and the like, although it has some bugs relating to compressed instructions, and by default it assumes that the program is 64 bit rather than 32 bit. 
