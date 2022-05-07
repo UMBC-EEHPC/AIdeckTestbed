@@ -1,18 +1,5 @@
-diff --git a/Makefile b/Makefile
-index da17c1fe..2662e51c 100644
---- a/Makefile
-+++ b/Makefile
-@@ -178,7 +178,7 @@ openocd.checkout:
- 	fi
- 
- openocd.build: openocd.checkout
--	cd utils/openocd && ./bootstrap && ./configure --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && $(MAKE) && $(MAKE) install
-+	cd utils/openocd && ./bootstrap && ./configure --disable-werror --enable-jtag_dpi --prefix=$(INSTALL_DIR)/openocd && $(MAKE) && $(MAKE) install
- 
- openocd.clean:
- 	rm -rf $(INSTALL_DIR)/openocd tools/openocd
 diff --git a/gap8/gap8.mk b/gap8/gap8.mk
-index f743412e..62f2ec5d 100644
+index 43f62c9a..b6bb3ba2 100644
 --- a/gap8/gap8.mk
 +++ b/gap8/gap8.mk
 @@ -173,7 +173,7 @@ openocd.checkout:
@@ -24,17 +11,63 @@ index f743412e..62f2ec5d 100644
  	cd utils/gap8-openocd && make -j install
  	mkdir -p $(INSTALL_DIR)/gap8-openocd/share/openocd/scripts/tcl
  	cd utils/openocd_tools && cp -r tcl/* $(INSTALL_DIR)/gap8-openocd/share/openocd/scripts/tcl
+diff --git a/gvsoc/gvsoc/engine/Makefile b/gvsoc/gvsoc/engine/Makefile
+index 0d8dd976..26a1ef83 100644
+--- a/gvsoc/gvsoc/engine/Makefile
++++ b/gvsoc/gvsoc/engine/Makefile
+@@ -11,9 +11,9 @@ ifndef VERBOSE
+ V = @
+ endif
+ 
+-CFLAGS +=  -MMD -MP -O2 -g -fpic -Isrc -std=c++11 -Werror -Wall -I$(INSTALL_DIR)/include
++CFLAGS +=  -MMD -MP -O2 -g -fpic -Isrc -std=c++11 -Wall -I$(INSTALL_DIR)/include
+ 
+-LDFLAGS += -O2 -g -Werror -Wall -lz -L$(INSTALL_DIR)/lib -Wl,--whole-archive -ljson -Wl,--no-whole-archive
++LDFLAGS += -O2 -g -Wall -lz -L$(INSTALL_DIR)/lib -Wl,--whole-archive -ljson -Wl,--no-whole-archive
+ 
+ ifdef VP_USE_SYSTEMC
+ CFLAGS += -D__VP_USE_SYSTEMC -I$(SYSTEMC_HOME)/include
+diff --git a/gvsoc/gvsoc/examples/launcher/Makefile b/gvsoc/gvsoc/examples/launcher/Makefile
+index 4a8f425f..277ec0f5 100644
+--- a/gvsoc/gvsoc/examples/launcher/Makefile
++++ b/gvsoc/gvsoc/examples/launcher/Makefile
+@@ -1,7 +1,7 @@
+ BUILD_DIR ?= $(CURDIR)/build
+ 
+-CFLAGS +=  -MMD -MP -O2 -g -std=c++11 -Werror -Wall -I$(INSTALL_DIR)/include
+-LDFLAGS += -O2 -g -Werror -Wall -L$(INSTALL_DIR)/lib -lpulpvp-debug
++CFLAGS +=  -MMD -MP -O2 -g -std=c++11 -Wall -I$(INSTALL_DIR)/include
++LDFLAGS += -O2 -g -Wall -L$(INSTALL_DIR)/lib -lpulpvp-debug
+ 
+ SRCS = launcher.cpp
+ OBJS = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SRCS))
+diff --git a/gvsoc/gvsoc/launcher/Makefile b/gvsoc/gvsoc/launcher/Makefile
+index 6d6d5a31..3b8ee808 100644
+--- a/gvsoc/gvsoc/launcher/Makefile
++++ b/gvsoc/gvsoc/launcher/Makefile
+@@ -5,8 +5,8 @@ LAUNCHER_BUILD_DIR = $(ROOT_VP_BUILD_DIR)/launcher
+ 
+ -include $(INSTALL_DIR)/rules/vp_models.mk
+ 
+-CFLAGS +=  -MMD -MP -O2 -g -fpic -std=c++11 -Werror -Wall -I$(INSTALL_DIR)/include
+-LDFLAGS += -O2 -g -shared -Werror -Wall -L$(INSTALL_DIR)/lib -Wl,--whole-archive -ljson -Wl,--no-whole-archive
++CFLAGS +=  -MMD -MP -O2 -g -fpic -std=c++11 -Wall -I$(INSTALL_DIR)/include
++LDFLAGS += -O2 -g -shared -Wall -L$(INSTALL_DIR)/lib -Wl,--whole-archive -ljson -Wl,--no-whole-archive
+ 
+ LAUNCHER_SRCS = src/launcher.cpp
+ LAUNCHER_OBJS = $(patsubst src/%.cpp,$(LAUNCHER_BUILD_DIR)/%.o,$(patsubst src/%.c,$(LAUNCHER_BUILD_DIR)/%.o,$(LAUNCHER_SRCS)))
 diff --git a/gvsoc/gvsoc/vp_models.mk b/gvsoc/gvsoc/vp_models.mk
-index e37a542b..3b287615 100644
+index e37a542b..0b2d0791 100644
 --- a/gvsoc/gvsoc/vp_models.mk
 +++ b/gvsoc/gvsoc/vp_models.mk
-@@ -30,9 +30,6 @@ VP_COMP_STD_LDFLAGS=-lpulpvp
+@@ -30,8 +30,8 @@ VP_COMP_STD_LDFLAGS=-lpulpvp
  VP_COMP_DBG_LDFLAGS=-lpulpvp-debug
  VP_COMP_SV_LDFLAGS=-lpulpvp-sv
  
 -VP_COMP_CFLAGS += -Werror -Wfatal-errors
 -VP_COMP_LDFLAGS += -Werror -Wfatal-errors
--
++VP_COMP_CFLAGS += -Wno-error
++VP_COMP_LDFLAGS += -Wno-error
+ 
  ifdef VP_USE_SYSTEMV
  VP_COMP_CFLAGS += -D__VP_USE_SYSTEMV
- endif

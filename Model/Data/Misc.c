@@ -1,0 +1,1 @@
+void GenTilingDebug(const char* message, ...) { }

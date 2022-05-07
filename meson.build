@@ -197,7 +197,8 @@ GenTile_Sources = files(
     GAP_SDK_Location / 'tools/autotiler_v3/Generators/BilinearResizes/ResizeGenerator.c',
     GAP_SDK_Location / 'tools/autotiler_v3/DSP_Generators/DSP_Generators.c',
     GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators_SQ8/CNN_Generators_SQ8.c',
-    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators_SQ8/RNN_Generators_SQ8.c'
+    GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators_SQ8/RNN_Generators_SQ8.c',
+    'Model/Data/Misc.c'
 )
 
 Prog_NNTOOL = find_program('nntool')
