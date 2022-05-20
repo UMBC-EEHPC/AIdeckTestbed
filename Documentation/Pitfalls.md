@@ -36,7 +36,7 @@ For real time applications, you generally shouldn't ever allocate or free memory
 
 ## Specifying Tasks For Cluster Cores
 
-Although they share the same architecture and extensions as the Fabric Controller, treat the cluster cores as if they were some sort of hardware accelerator you purely submit cluster tasks to. If you're used to programming on desktop OS', you might assume you can simply launch separate threads and have some sort of scheduler distribute them across the cores. But alas, there is no way, instead the cluster cores are more akin to a graphics card, or a supercomputer. You submit one task, that one task gets forked and ran on different pieces of data across the number of cores specified by the -mPE compiler flag, then finally, the cluster will return the results of that parallel task back to the Fabric Controller.
+An initial assumption one might have when first seeing the GAP8 is assuming that one can dynamically schedule tasks across all the cores, similar to desktop processors, however, this isn't really the case. The GAP8 is really closer to the Cell Broadband Engine than any sort of desktop CPU, one instead submit tasks for execution on the cluster cores, and then the result gets returned to the Fabric Controller. The custom GreenWaves GCC fork provides a CFLAG for controlling the number of cluster cores used at maximum, -mPE=x. 
 
 ## Atomic Operations
 
