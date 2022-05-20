@@ -3,7 +3,7 @@
         {
             "name": "GAP8_GVSOC",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/Source/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/io/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/workstation/include/**",
@@ -36,7 +36,7 @@
         {
             "name": "GAP8_AIdeck",
             "includePath": [
-                "${workspaceFolder}/**",
+                "${workspaceFolder}/Source/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/GAP8_V2/include/io/**",
                 "${workspaceFolder}/Toolchain/gap_sdk/install/workstation/include/**",

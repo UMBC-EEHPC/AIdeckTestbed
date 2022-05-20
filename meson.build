@@ -77,9 +77,9 @@ GAP8_Link_Flags = [
 ]
 
 Includes = include_directories(
-    '.',
-    './Model',
-    './Model/Data',
+    './Source',
+    './Source/Model',
+    './Source/Model/Data',
     GAP_SDK_Location / 'install/GAP8_V2/include',
     GAP_SDK_Location / 'install/GAP8_V2/include/io',
     GAP_SDK_Location / 'install/workstation/include',
@@ -102,7 +102,7 @@ Native_CXX_Flags = [
 ]
 
 GenTile_Includes = include_directories(
-    '.',
+    './Source',
     GAP_SDK_Location / 'tools/autotiler_v3/Autotiler',
     GAP_SDK_Location / 'tools/autotiler_v3/Emulation',
     GAP_SDK_Location / 'tools/autotiler_v3/CNN_Generators',
@@ -156,12 +156,11 @@ Lib_AutoTiler = Native_C_Compiler.find_library(
 )
 
 Sources = files(
-    'Main.cpp',
     GAP_SDK_Location / 'gap8/rtos/pulp/pulp-os/kernel/conf.c'
 )
 
 GenResize_Sources = files(
-    'Model/Data/ResizeModel.c'
+    'Source/Model/Data/ResizeModel.c'
 )
 
 Tile_Kernel_Sources = files(
@@ -207,8 +206,7 @@ L1_Reserved_Memory = '30000'
 L2_Reserved_Memory = '190000'
 L3_Reserved_Memory = '8000000'
 
-subdir('Core')
-subdir('Model')
+subdir('Source')
 
 Lib_AutoTilerGen = static_library(
     'AutoTilerGen',
@@ -270,8 +268,8 @@ GAP8_Resize_Sources = custom_target(
 Model_State_File = custom_target(
     'model_state_file',
     input: [
-        'Model/Data/nntool_script',
-        'Model/Data/ptq_int8.tflite'
+        'Source/Model/Data/nntool_script',
+        'Source/Model/Data/ptq_int8.tflite'
     ],
     output: [
         'ptq_int8.json'
