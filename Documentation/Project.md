@@ -7,11 +7,12 @@ It is highly recommended that if contributing to this project, one installs clan
 The way this project is laid out is as follows:
 
 ```
-Core/Containers/ - contains some helpers that wrap ETL
-Core/Device/ - contains some C++ wrappers for AI-deck peripherals
-Core/Heap/ - contains some C++ wrappers for heap allocation
-Core/Support/ - contains some miscellaneous headers and miscellaneous C++ runtime functions
-Core/Sync/ - contains some C++ wrappers for PMSIS synchronization primitives
+Source/ - the project code root directory
+Source/Core/Containers/ - contains some helpers that wrap ETL
+Source/Core/Device/ - contains some C++ wrappers for AI-deck peripherals
+Source/Core/Heap/ - contains some C++ wrappers for heap allocation
+Source/Core/Support/ - contains some miscellaneous headers and miscellaneous C++ runtime functions
+Source/Core/Sync/ - contains some C++ wrappers for PMSIS synchronization primitives
 
 Model/ - contains everything related to the neural net models
 Model/Data/ - contains some miscellaneous required headers, some scripts for exporting the models to the AI-deck, and code required to generate the bilinear resize kernel for the AI-deck
@@ -21,6 +22,4 @@ PowerMeter/ - Contains some Arduino code for measuring power draw thru the INA21
 Scripts/ - contains some helper scripts used by Meson during compilation
 
 Toolchain/ - contains everything necessary to download, compile, and install GCC, Binutils, and the GAP8 SDK inside this repo directory
-
-/ - contains everything else including the program entry point
 ```

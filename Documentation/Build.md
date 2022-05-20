@@ -39,6 +39,8 @@ ninja size_gvsoc disassemble_gvsoc gvsoc
 
 This will build the project to run under the GVSOC emulator.
 
+# Warning: Make sure to run ninja clean or meson setup --wipe in between rebuilding the project for the GVSOC emulator or directly for the AIdeck. Although they mostly build the same code, there's some subtle differences in between what compiler flags and features get enabled for that same code, so as a result, building without cleaning will cause code designed specifically for GVSOC to get reused on the AIdeck, causing possible issues.
+
 ```bash
 ninja size_aideck disassemble_aideck aideck
 ```

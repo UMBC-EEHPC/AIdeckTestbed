@@ -46,7 +46,7 @@ GVSOC does have some limited GDB support, with the ability to inspect registers 
 
 ## AutoTiler
 
-This is a rather interesting program, and seems to be one of GreenWaves' "killer apps" for the GAP8 along with NNTool. It's a code generator that automatically generates C source files for compute tasks, and it is designed to allow programmers to write code for compute tasks without having to directly worry about memory availability while writing these compute tasks. It will automatically perform the work of optimizing memory transfers between different areas on the memory hierarchy according to given constraints such as the total amount of available memory at runtime.
+This is a rather interesting program, and seems to be one of GreenWaves' "killer apps" for the GAP8 along with NNTOOL. It's a code generator that automatically generates C source files for compute tasks, and it is designed to allow programmers to write code for compute tasks without having to directly worry about memory availability while writing these compute tasks. It will automatically perform the work of optimizing memory transfers between different areas on the memory hierarchy according to given constraints such as the total amount of available memory at runtime.
 
 AutoTiler comes as a (sadly) proprietary library compiled for amd64 Linux with glibc. To use it, you simply write a model specification with the required constraints in C/C++, compile it with your host compiler, then link it against the AutoTiler library. As this is a code generator, it runs on your host computer, and once it's finished executing, you should have several C source files that you can then treat as if they were hand written source files for the GAP8. 
 
@@ -54,17 +54,17 @@ These generated C source files are based on prewritten compute kernels, GreenWav
 
 Yet another cool feature is that one doesn't necessarily need to compile and run these generated C source files on the GAP8, GreenWaves provides some compatibility functions that allow one to run these generated models as an i386 Linux binary (you will more than likely need to install some compatibility libraries and headers in order to perform this step).
 
-## NNTool
+## NNTOOL
 
-NNTool is a program GreenWaves developed that assists in the process of exporting TensorFlow Lite or ONNX neural networks to execute on the GAP8. It works by creating a model specification that one can then compile against AutoTiler to create a generator that allows one to then export this neural network for the GAP8 according to given memory constraints. Essentially, the process looks like the following:
+NNTOOL is a program GreenWaves developed that assists in the process of exporting TensorFlow Lite or ONNX neural networks to execute on the GAP8. It works by creating a model specification that one can then compile against AutoTiler to create a generator that allows one to then export this neural network for the GAP8 according to given memory constraints. Essentially, the process looks like the following:
 
 ![](InlineImages/gapflow.png)
 
-NNTool can be run either as a CLI program that the user can interact with and run commands in, or it can be scripted using the same commands, just in a text file that is passed into NNTool's argv. Both this project and the GAP SDK's Makefiles take full advantage of the scripting functionality, and it's been automated as part of the build process in both. 
+NNTOOL can be run either as a CLI program that the user can interact with and run commands in, or it can be scripted using the same commands, just in a text file that is passed into NNTOOL's argv. Both this project and the GAP SDK's Makefiles take full advantage of the scripting functionality, and it's been automated as part of the build process in both. 
 
-NNTool provides a plethora of options for working with neural networks, it performs several steps such as trimming or combining unsupported or redundant neural network layers, and it also handles quantization settings automatically, which is important for embedded devices, especially ones like the GAP8 which don't have floating point support in hardware. 
+NNTOOL provides a plethora of options for working with neural networks, it performs several steps such as trimming or combining unsupported or redundant neural network layers, and it also handles quantization settings automatically, which is important for embedded devices, especially ones like the GAP8 which don't have floating point support in hardware. 
 
-For more information about NNTool and it's supported operations, visit these two links, [the NN Quick Start Guide](https://greenwaves-technologies.com/sdk-manuals/nn_quick_start_guide/), and [the NNTool Docs](https://github.com/GreenWaves-Technologies/gap_sdk/tree/master/tools/nntool).
+For more information about NNTOOL and it's supported operations, visit these two links, [the NN Quick Start Guide](https://greenwaves-technologies.com/sdk-manuals/nn_quick_start_guide/), and [the NNTOOL Docs](https://github.com/GreenWaves-Technologies/gap_sdk/tree/master/tools/nntool).
 
 ## GoogleTest
 

@@ -21,7 +21,7 @@ The project serves as a platform for conducting research into low power edge inf
 | [AIdeckPeripherals](Documentation/AIdeckPeripherals.md) | An explanation of some peripherals associated with the AI-deck |
 | [Build](Documentation/Build.md) | Some build instructions for compiling and using this project |
 | [GAP8](Documentation/GAP8.md) | A writeup on the design of the GAP8 SoC used on the AI-deck |
-| [Pitfalls](Documentation/Pitfalls.md) | A warning about potential issues one might face when programming embedded systems, particularly the GAP8 |
+| [Pitfalls](Documentation/Pitfalls.md) | A warning about potential issues one might face when programming the GAP8 |
 | [Project](Documentation/Project.md) | A description of how the project is arranged |
 | [Toolchain](Documentation/Toolchain.md) | A description of the GAP8's custom set of tools and compilers, plus this project's Meson build system |
 

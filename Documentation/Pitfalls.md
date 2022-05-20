@@ -1,10 +1,10 @@
 # Pitfalls
 
-Some non-obvious issues that have arisen while writing code for the GAP8...
+Some non-obvious issues that have been experienced while writing code for the GAP8, some of this is the typical sort of embedded quirks, others are a bit more specific to the GAP8.
 
 ## JTAG Cable Usage
 
-Bitcraze is working on a method of flashing the GAP8 and NINA OTA using WiFi and/or the Crazyradio, however it's still not fully complete so for now, the JTAG cable is still a necessity for doing much of anything with the AI-deck. Unfortunately, the JTAG cable seems to be a bit buggy, *especially* when taking power measurements. Sometimes the flasher will error out and report it's receiving all zero's or all one's when you attempt to flash an image. Usually when this happens, you'll have to manually kill the various processes launched by the flasher from the terminal, as well as turn off the Crazyflie/AI-deck, disconnect the AI-deck, reconnect it, then turn it back on. However, this doesn't always solve the issue, especially if you have the AI-deck/Crazyflie partly disassembled for taking power measurements. In the latter case, the fix seems to be to effectively pull apart the whole entire power measurement setup, disconnect every wire, and then reconnect it. It's a bit time consuming and annoying, but it seems to be the only effective solution at the moment.  
+Bitcraze is working on a method of flashing the GAP8 and NINA OTA using WiFi and/or the Crazyradio, however it's still not fully complete so for now, the JTAG cable is still a necessity for doing much of anything with the AI-deck. Unfortunately, the JTAG cable seems to be a bit buggy, *especially* when taking power measurements. Sometimes the flasher will error out and report it's receiving all zero's or all one's when you attempt to flash an image. Usually when this happens, you'll have to manually kill the various processes launched by the flasher, as well as turn off the Crazyflie/AI-deck, disconnect the AI-deck, reconnect it, then turn it back on. However, this doesn't always solve the issue, especially if you have the AI-deck/Crazyflie partly disassembled for taking power measurements. In the latter case, the only known fix is to effectively pull apart the whole entire power measurement setup, disconnecting every wire, and then reconnecting all of them.
 
 ## SDK
 
@@ -30,7 +30,7 @@ A final thing to be aware of is that the stack for both the Fabric Controller an
 
 ## PMSIS API Heap Allocation
 
-For real time applications, you generally shouldn't ever allocate or free memory using a standard heap allocator during program execution except during program startup and shutdown. However, when you do allocate memory, be extremely careful that you free any allocations you make in LIFO order. If you don't, the PMSIS heap allocator will lose track of its free space and likely cause an allocation failure next time you try making an allocation. So as an example, if you allocate 3 objects, but then you free the second object before freeing the other objects, your next allocation will likely fail.
+For real time applications, you generally shouldn't ever allocate or free memory using a standard heap allocator during program execution except during program startup and shutdown. However, when you do allocate memory, be extremely careful that you free any allocations you make in LIFO order. If you don't, the PMSIS heap allocator will lose track of its free space and likely cause an allocation failure next time you try making an allocation. As an example, if you allocate 3 objects, but then you free the second object before freeing the other objects, your next allocation will likely fail.
 ![](InlineImages/pmsis_heap_allocator.png)
 *In this example, various objects were allocated but then freed out of the order they were allocated in, as you can see, the PMSIS API's heap allocator essentially "forgot" it had hundreds of kilobytes free*
 
