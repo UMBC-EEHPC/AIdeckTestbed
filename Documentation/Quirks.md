@@ -56,7 +56,7 @@ SLAVE_STACK_SIZE
 RT_FC_STACK_SIZE
 ```
 
-SLAVE_STACK_SIZE is obvious, it controls how much stack space the cluster cores have, on the other hand, it's not entirely clear what the difference is between STACK_SIZE and RT_FC_STACK_SIZE, one would expect them to have the same usage, however, looking through the GAP SDK, they both appear to have different usages. **Be careful to also lower the amount of L1 memory available to AutoTiler by the amount of stack space you allocate, or else the neural networks will overwrite stack memory.**
+SLAVE_STACK_SIZE is obvious, it controls how much stack space the cluster cores each individually have, on the other hand, it's not entirely clear what the difference is between STACK_SIZE and RT_FC_STACK_SIZE, one would expect them to have the same usage, however, looking through the GAP SDK, they both appear to have different usages. **Be careful to also lower the amount of L1 memory available to AutoTiler by the amount of stack space you allocate, or else the neural networks will overwrite stack memory.**
 
 ## Color Camera Outputting Grayscale Images?
 
