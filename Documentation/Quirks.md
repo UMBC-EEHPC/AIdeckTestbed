@@ -1,4 +1,4 @@
-# Pitfalls
+# Quirks
 
 Some non-obvious issues that have been experienced while writing code for the GAP8, some of this is the typical sort of embedded quirks, others are a bit more specific to the GAP8.
 
@@ -36,7 +36,7 @@ For real time applications, you generally shouldn't ever allocate or free memory
 
 ## Specifying Tasks For Cluster Cores
 
-An initial assumption one might have when first seeing the GAP8 is assuming that one can dynamically schedule tasks across all the cores, similar to desktop processors, however, this isn't really the case. The GAP8 is really closer to the Cell Broadband Engine than any sort of desktop CPU, one instead submit tasks for execution on the cluster cores, and then the result gets returned to the Fabric Controller. The custom GreenWaves GCC fork provides a CFLAG for controlling the number of cluster cores used at maximum, -mPE=x. 
+An initial assumption one might have when first seeing the GAP8 is assuming that one can dynamically schedule tasks across all the cores, similar to desktop processors, however, this isn't really the case. The GAP8 is much closer to the Cell Broadband Engine than any sort of desktop CPU, one submits tasks for execution on the cluster cores, and then the result gets returned to the Fabric Controller. The custom GreenWaves GCC fork provides a CFLAG for controlling the number of cluster cores used at maximum, -mPE=x. 
 
 ## Atomic Operations
 
@@ -45,3 +45,19 @@ The default libgcc atomic operations aren't supported by the GAP8, attempting to
 ## Synchronization Primitives
 
 The GAP SDK provides spinlocks, mutexes, etc. although for whatever reason, as of the time of writing, none of them appear on the official GreenWaves API docs. Thus, if you'd like to use a synchronization primitive that doesn't have a C++ wrapper already implemented, it's recommended to search for examples of how it's used within the GAP SDK.
+
+## Neural Networks
+
+NNTOOL and AutoTiler have a number of rough edges, both can be prone to failing in both spectacular and subtle ways, and it can be extremely difficult to figure out exactly why, especially since AutoTiler in particular is closed source and there's not a whole ton of documentation. As such, getting them to work properly can require a ***lot*** of trial and error. Luckily, most of the flags and commands you pass to each of the tools have been abstracted away in Meson, however, some issues you'll likely face are as follows: the resultant on-device neural network not working at all, as in, returning the same inference for every input, AutoTiler crashing while generating the C code for the on-device neural network, or, the neural network running out of stack space during execution. The first issue still hasn't been narrowed down, I'm (Edward) not currently sure if the cause is the weights not being loaded correctly, if it's a bug in NNTOOL/AutoTiler, or if there's something else going on. As for the second issue, a fix that has been found is that tweaking the amount of L1/L2/L3 memory being allocated in the root Meson build script can help. For whatever reason, AutoTiler will sometimes segfault if it can't allocate enough space for a neural network at a given node in the neural network's execution graph. The third, somewhat related issue, is tweaking the amount of stack space allocated for both the Fabric Controller and cluster cores, there's several preprocessor macros to tweak in the root Meson build script:
+
+```
+STACK_SIZE
+SLAVE_STACK_SIZE
+RT_FC_STACK_SIZE
+```
+
+SLAVE_STACK_SIZE is obvious, it controls how much stack space the cluster cores have, on the other hand, it's not entirely clear what the difference is between STACK_SIZE and RT_FC_STACK_SIZE, one would expect them to have the same usage, however, looking through the GAP SDK, they both appear to have different usages. **Be careful to also lower the amount of L1 memory available to AutoTiler by the amount of stack space you allocate, or else the neural networks will overwrite stack memory.**
+
+## Color Camera Outputting Grayscale Images?
+
+This is an issue GreenWaves has [acknowledged](https://www.bitcraze.io/2020/07/ai-deck-sees-in-color/). However, if you're pretty sure you have a color camera, but the debayering isn't working, check your camera. As in, detach it from the AI-deck and look at the model name written on the camera's sensor connector. Color cameras should have **608H_A** written on them, whereas the monochrome cameras will have **608H-1_A**. Apart from the model names, both cameras otherwise look almost exactly identical so it's normally impossible to just tell which camera is which by looking at it when it's mounted on the AI-deck. 
