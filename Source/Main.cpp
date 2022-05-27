@@ -104,21 +104,3 @@ void project_main()
     l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
     assert_gap8(cluster.close_cluster());
 }
-
-/*
- * Didn't actually realize it at first, but pmsis_exit()
- * stops destructors that free any devices from working
- * properly because it will execute before any other destructors
- * Thus, move pmsis_exit into its own function
- */
-void program_main()
-{
-    program_main_2();
-    printf("Finished execution\n");
-    pmsis_exit(0);
-}
-
-int main()
-{
-    return pmsis_kickoff((void*)program_main);
-}
