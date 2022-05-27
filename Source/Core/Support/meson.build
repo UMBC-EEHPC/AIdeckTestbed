@@ -1,4 +1,5 @@
 Sources += files(
     'StackCanary.cpp',
-    'NewDelete.cpp'
+    'NewDelete.cpp',
+    'RealMain.cpp'
 )

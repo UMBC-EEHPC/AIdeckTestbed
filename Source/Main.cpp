@@ -12,7 +12,7 @@
 #include <Model/CollisionModel.h>
 #include <stdint.h>
 
-void program_main_2()
+void project_main()
 {
     printf("Initializing devices\n");
     Core::Device::CPU::set_fabric_voltage(1.2);
