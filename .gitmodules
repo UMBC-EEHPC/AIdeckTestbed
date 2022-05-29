@@ -5,3 +5,6 @@
 [submodule "Toolchain/etl"]
 	path = Toolchain/etl
 	url = https://github.com/ETLCPP/etl.git
+[submodule "Toolchain/tflite-micro"]
+	path = Toolchain/tflite-micro
+	url = https://github.com/aurxenon/tflite-micro.git
