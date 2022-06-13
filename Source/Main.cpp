@@ -1,4 +1,5 @@
 #include <Benchmarks.h>
+#include <Constants.h>
 #include <Core/Device/CPU/CPU.h>
 #include <Core/Device/Camera/Camera.h>
 #include <Core/Device/Cluster/Cluster.h>
@@ -48,7 +49,7 @@ void project_main()
     auto& wifi = *wifi_or_error;
     printf("Initialized WIFI\n");
 
-    auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, 80, 60);
+    auto* frame_streamer_or_error = Core::Device::FrameStreamer::initialize(wifi, camera, MODEL_WIDTH, MODEL_HEIGHT);
     if (!frame_streamer_or_error)
         assert_not_reached_gap8();
     auto& frame_streamer = *frame_streamer_or_error;
@@ -58,12 +59,12 @@ void project_main()
         camera.get_image_width() * camera.get_image_height());
 #else
     auto camera_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
-        324 * 244);
+        CAMERA_WIDTH * CAMERA_HEIGHT);
 #endif // BENCHMARKING_WIFI_STREAMER
     printf("Allocated camera output frame buffer\n");
 
     auto model_frame_buffer = Core::Containers::create_vector_on_heap<uint8_t, Core::Heap::L2Heap>(
-        80 * 60);
+        MODEL_WIDTH * MODEL_HEIGHT);
     printf("Allocated neural network input frame buffer\n");
 
     auto* cluster_or_error = Core::Device::Cluster::initialize();
@@ -92,15 +93,20 @@ void project_main()
 #if defined(BENCHMARKING_WIFI_STREAMER)
     pi_task_t* streamer_task;
     while (true) {
+#endif // BENCHMARKING_WIFI_STREAMER
+
+#if defined(BENCHMARKING_WIFI_STREAMER)
         camera.stream(camera_frame_buffer, [&]() {
+#endif // BENCHMARKING_WIFI_STREAMER
             assert_gap8(cluster.submit_kernel_synchronously(cm));
+#if defined(BENCHMARKING_WIFI_STREAMER)
             assert_gap8(streamer_task = frame_streamer.send_frame_async(model_frame_buffer, [] {}));
             pi_task_wait_on(streamer_task);
         });
     }
 #endif // BENCHMARKING_WIFI_STREAMER
 
-    l2heap.deallocate(model_frame_buffer.data(), 80 * 60);
-    l2heap.deallocate(camera_frame_buffer.data(), 324 * 244);
+    l2heap.deallocate(model_frame_buffer.data(), MODEL_WIDTH * MODEL_HEIGHT);
+    l2heap.deallocate(camera_frame_buffer.data(), CAMERA_WIDTH * CAMERA_HEIGHT);
     assert_gap8(cluster.close_cluster());
 }

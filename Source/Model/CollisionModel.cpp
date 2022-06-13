@@ -17,13 +17,17 @@ volatile static void cluster(void* arg)
     gap_cl_resethwtimer();
 #endif // BENCHMARKING_MODEL
 
+#if (CAMERA_FRAME_BUFFER != MODEL_FRAME_BUFFER)
     ResizeImage(original_image, resized_image);
+#endif // (CAMERA_FRAME_BUFFER == MODEL_FRAME_BUFFER)
 
-#ifdef BENCHMARKING_MODEL
+#if defined(BENCHMARKING_MODEL) && !defined(__PLATFORM_GVSOC__)
     while (true) {
+#endif // BENCHMARKING_MODEL && !defined(__PLATFORM_GVSOC__)
         ptq_int8CNN(resized_image, &output);
+#if defined(BENCHMARKING_MODEL) && !defined(__PLATFORM_GVSOC__)
     }
-#endif // BENCHMARKING_MODEL
+#endif // BENCHMARKING_MODEL && !defined(__PLATFORM_GVSOC__)
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)

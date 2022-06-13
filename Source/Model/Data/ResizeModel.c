@@ -13,6 +13,8 @@
 #include "AutoTilerLib.h"
 #include "ResizeGenerator.h"
 
+#include <Constants.h>
+
 int main(int argc, char** argv)
 {
     if (TilerParseOptions(argc, argv)) {
@@ -28,7 +30,7 @@ int main(int argc, char** argv)
     SetGeneratedFilesNames("ResizeKernels.c", "ResizeKernels.h");
     LoadResizeLibrary();
 
-    GenerateResize("ResizeImage", 324, 244, 80, 60);
+    GenerateResize("ResizeImage", CAMERA_WIDTH, CAMERA_HEIGHT, 80, 60);
 
     GenerateTilingCode();
     return 0;

@@ -160,7 +160,8 @@ Sources = files(
 )
 
 GenResize_Sources = files(
-    'Source/Model/Data/ResizeModel.c'
+    'Source/Model/Data/ResizeModel.c',
+    'Source/Model/Data/Constants.cpp'
 )
 
 Tile_Kernel_Sources = files(
