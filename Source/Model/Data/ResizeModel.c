@@ -30,7 +30,11 @@ int main(int argc, char** argv)
     SetGeneratedFilesNames("ResizeKernels.c", "ResizeKernels.h");
     LoadResizeLibrary();
 
-    GenerateResize("ResizeImage", CAMERA_WIDTH, CAMERA_HEIGHT, 80, 60);
+#if (CAMERA_WIDTH != MODEL_WIDTH && CAMERA_HEIGHT != MODEL_HEIGHT)
+    GenerateResize("ResizeImage", CAMERA_WIDTH, CAMERA_HEIGHT, MODEL_WIDTH, MODEL_HEIGHT);
+#else
+    GenerateResize("ResizeImage", CAMERA_WIDTH, CAMERA_HEIGHT, 200, 200);
+#endif
 
     GenerateTilingCode();
     return 0;

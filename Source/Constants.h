@@ -1,15 +1,7 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define CAMERA_WIDTH 324
+#define CAMERA_HEIGHT 244
 
-extern int const CAMERA_WIDTH;
-extern int const CAMERA_HEIGHT;
-
-extern int const MODEL_WIDTH;
-extern int const MODEL_HEIGHT;
-
-#ifdef __cplusplus
-}
-#endif
+#define MODEL_WIDTH 324;
+#define MODEL_HEIGHT 244;

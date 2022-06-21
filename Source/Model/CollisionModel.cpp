@@ -17,9 +17,9 @@ volatile static void cluster(void* arg)
     gap_cl_resethwtimer();
 #endif // BENCHMARKING_MODEL
 
-#if (CAMERA_FRAME_BUFFER != MODEL_FRAME_BUFFER)
+#if (CAMERA_WIDTH != MODEL_WIDTH && CAMERA_HEIGHT != MODEL_HEIGHT)
     ResizeImage(original_image, resized_image);
-#endif // (CAMERA_FRAME_BUFFER == MODEL_FRAME_BUFFER)
+#endif // (CAMERA_WIDTH != MODEL_WIDTH && CAMERA_HEIGHT != MODEL_HEIGHT)
 
 #if defined(BENCHMARKING_MODEL) && !defined(__PLATFORM_GVSOC__)
     while (true) {
