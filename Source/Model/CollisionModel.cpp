@@ -21,13 +21,13 @@ volatile static void cluster(void* arg)
     ResizeImage(original_image, resized_image);
 #endif // (CAMERA_WIDTH != MODEL_WIDTH && CAMERA_HEIGHT != MODEL_HEIGHT)
 
-#if defined(BENCHMARKING_MODEL) && !defined(__PLATFORM_GVSOC__)
+#if defined(BENCHMARKING_MODEL) && defined(BENCHMARKING_POWER)
     while (true) {
 #endif // BENCHMARKING_MODEL && !defined(__PLATFORM_GVSOC__)
         ptq_int8CNN(resized_image, &output);
 #if defined(BENCHMARKING_MODEL) && !defined(__PLATFORM_GVSOC__)
     }
-#endif // BENCHMARKING_MODEL && !defined(__PLATFORM_GVSOC__)
+#endif // BENCHMARKING_MODEL && !defined(BENCHMARKING_POWER)
 }
 
 CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)
