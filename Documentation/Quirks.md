@@ -4,7 +4,13 @@ Some non-obvious issues that have been experienced while writing code for the GA
 
 ## JTAG Cable Usage
 
-Bitcraze is working on a method of flashing the GAP8 and NINA OTA using WiFi and/or the Crazyradio, however it's still not fully complete so for now, the JTAG cable is still a necessity for doing much of anything with the AI-deck. Unfortunately, the JTAG cable seems to be a bit buggy, *especially* when taking power measurements. Sometimes the flasher will error out and report it's receiving all zero's or all one's when you attempt to flash an image. Usually when this happens, you'll have to manually kill the various processes launched by the flasher, as well as turn off the Crazyflie/AI-deck, disconnect the AI-deck, reconnect it, then turn it back on. However, this doesn't always solve the issue, especially if you have the AI-deck/Crazyflie partly disassembled for taking power measurements. In the latter case, the only known fix is to effectively pull apart the whole entire power measurement setup, disconnecting every wire, and then reconnecting all of them.
+Bitcraze is working on a method of flashing the GAP8 and NINA OTA using WiFi and/or the Crazyradio, however it's still not fully complete so for now, the JTAG cable is still a necessity for doing much of anything with the AI-deck. Unfortunately, the JTAG cable seems to be a bit buggy, *especially* when taking power measurements. 
+
+### Error: Frozen During GAP8 INIT TARGET 
+Sometimes the OpenOCD flasher will deadlock while trying to gain control over the JTAG interface, this could either be because of a bug in the driver, or there's another rogue OpenOCD flasher process running in the background, regardless, usually the easiest method to deal with this is to turn off the AI-deck/Crazyflie, unplug the JTAG cable from both your computer and AI-deck, and then reconnect everything and turn it back on.
+
+### Error: JTAG scan chain interrogation failed: all zeros
+Sometimes the OpenOCD flasher will error out and report it's receiving all zero's or all one's when you attempt to flash an image. Assuming your AI-deck is plugged into your computer and powered on, then, well, the only known fix is to effectively pull apart the whole entire power measurement setup, disconnecting every wire, and then reconnecting all of the wires to their proper locations. This seems to be extremely prevalent on certain AI-deck's but not others, it's not entirely clear why, it could either just be the boards were damaged at some point electrically by someone in the lab, or it could just be that there was a certain bug introduced in manufacturing of that specific batch.
 
 ## SDK
 
