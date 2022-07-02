@@ -31,6 +31,11 @@ GCC_NAME="pulp-riscv-gcc"
 GCC_PKG="${GCC_NAME}"
 GCC_BASE_URL="https://github.com/pulp-platform/pulp-riscv-gcc.git"
 
+NEWLIB_CHKSUM="1e52935101d096bb2e9381c7b131d6b976f0acd9"
+NEWLIB_NAME="pulp-riscv-newlib"
+NEWLIB_PKG="${NEWLIB_NAME}"
+NEWLIB_BASE_URL="https://github.com/pulp-platform/pulp-riscv-newlib.git"
+
 GTEST_VERSION="1.11.0"
 GTEST_MD5SUM="e8a8df240b6938bb6384155d4c37d937"
 GTEST_NAME="release-$GTEST_VERSION"
@@ -92,6 +97,16 @@ pushd "$DIR/Downloads"
         ln -s $GCC_NAME riscv-gcc
     else
         echo "Skipped downloading gcc"
+    fi
+
+    if [ ! -e $NEWLIB_PKG ] ; then
+        rm -rf $NEWLIB_PKG
+        git clone "$NEWLIB_BASE_URL"
+        pushd "$NEWLIB_PKG"
+        git checkout "$NEWLIB_CHKSUM"
+        popd
+    else
+        echo "Skipped downloading newlib"
     fi
 
     md5="$($MD5SUM ${GTEST_PKG} | cut -f1 -d' ')"
