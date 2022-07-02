@@ -38,7 +38,7 @@ GTEST_BASE_URL="https://github.com/google/googletest/archive/refs/tags"
 
 ANACONDA_VERSION="2021.04"
 ANACONDA_ARCH=$(uname -m)
-ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-Linux-${ANACONDA_ARCH}"
+ANACONDA_NAME="Anaconda3-${ANACONDA_VERSION}-Linux-${ANACONDA_ARCH}"
 if [[ $ANACONDA_ARCH == "aarch64" ]] ; then
 ANACONDA_MD5SUM="14f48f5d1310478b11940a3b96eec7b6"
 else
