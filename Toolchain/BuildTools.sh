@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
 set -e
-# This file is ripped right from https://github.com/SerenityOS/serenity
-# Thank you to all of the SerenityOS contributors who helped create this file
-# This file will need to be run in bash, for now.
-
-
-# === CONFIGURATION AND SETUP ===
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-echo "$DIR"
 
 TARGET="riscv32-unknown-elf"
 PREFIX="$DIR/Local"
@@ -17,10 +9,6 @@ PREFIX="$DIR/Local"
 MAKE=make
 MD5SUM=md5sum
 NPROC=nproc
-
-echo PREFIX is "$PREFIX"
-
-mkdir -p "$DIR/Tarballs"
 
 PULP_RISCV_GNU_TOOLCHAIN_CHKSUM="49dea1915979fdf91eb2ad4a8873e4cd88a6b811"
 PULP_RISCV_GNU_TOOLCHAIN_NAME="pulp-riscv-gnu-toolchain"
@@ -42,11 +30,6 @@ GCC_NAME="pulp-riscv-gcc"
 GCC_PKG="${GCC_NAME}"
 GCC_BASE_URL="https://github.com/pulp-platform/pulp-riscv-gcc.git"
 
-NEWLIB_CHKSUM="1e52935101d096bb2e9381c7b131d6b976f0acd9"
-NEWLIB_NAME="pulp-riscv-newlib"
-NEWLIB_PKG="${NEWLIB_NAME}"
-NEWLIB_BASE_URL="https://github.com/pulp-platform/pulp-riscv-newlib.git"
-
 GTEST_VERSION="1.11.0"
 GTEST_MD5SUM="e8a8df240b6938bb6384155d4c37d937"
 GTEST_NAME="release-$GTEST_VERSION"
@@ -59,11 +42,7 @@ ANACONDA_MD5SUM="1046c40a314ab2531e4c099741530ada"
 ANACONDA_PKG="${ANACONDA_NAME}.sh"
 ANACONDA_BASE_URL="https://repo.anaconda.com/archive"
 
-# === DOWNLOAD AND PATCH ===
-git submodule init
-git submodule update --recursive
-
-pushd "$DIR/Tarballs"
+pushd "$DIR/Downloads"
     if [ ! -e $PULP_RISCV_GNU_TOOLCHAIN_PKG ] ; then
         rm -rf $PULP_RISCV_GNU_TOOLCHAIN_PKG
         git clone "$PULP_RISCV_GNU_TOOLCHAIN_BASE_URL"
@@ -107,16 +86,6 @@ pushd "$DIR/Tarballs"
         echo "Skipped downloading gcc"
     fi
 
-    if [ ! -e $NEWLIB_PKG ] ; then
-        rm -rf $NEWLIB_PKG
-        git clone "$NEWLIB_BASE_URL"
-        pushd "$NEWLIB_PKG"
-        git checkout "$NEWLIB_CHKSUM"
-        popd
-    else
-        echo "Skipped downloading newlib"
-    fi
-
     md5="$($MD5SUM ${GTEST_PKG} | cut -f1 -d' ')"
     echo "gc md5='$md5'"
     if [ ! -e $GTEST_PKG ] || [ "$md5" != ${GTEST_MD5SUM} ] ; then
@@ -151,13 +120,9 @@ pushd "$DIR/Tarballs"
 
 popd
 
-
-# === COMPILE AND INSTALL ===
-
 mkdir -p "$PREFIX"
 mkdir -p "$DIR/Build"
-cp -R "$DIR/Tarballs/${OPENOCD_NAME}" "$DIR/Build/" || true
-cp -R "$DIR/Tarballs/${NEWLIB_NAME}" "$DIR/Build/" || true
+cp -R "$DIR/Downloads/${OPENOCD_NAME}" "$DIR/Build/" || true
 mkdir -p "$DIR/Build/binutils"
 mkdir -p "$DIR/Build/gcc"
 mkdir -p "$DIR/Build/gtest"
@@ -176,9 +141,7 @@ pushd "$DIR/Build/"
                                         --datarootdir="$PREFIX"/share/gap8-openocd \
 					--disable-werror \
                                         || exit 1
-        echo "XXX build openocd"
         "$MAKE" -j "$MAKEJOBS" || exit 1
-        echo "XXX install openocd"
         "$MAKE" install || exit 1
 
         sudo cp "$PREFIX"/share/gap8-openocd/openocd/contrib/60-openocd.rules /etc/udev/rules.d || exit 1
@@ -187,21 +150,19 @@ pushd "$DIR/Build/"
     popd
     
     pushd binutils
-        "$DIR"/Tarballs/"$BINUTILS_NAME"/configure --target=$TARGET \
+        "$DIR"/Downloads/"$BINUTILS_NAME"/configure --target=$TARGET \
                                                 --prefix="$PREFIX" \
                                                 --disable-nls \
                                                 --without-isl \
                                                 --disable-werror \
                                                 --disable-gdb \
                                                 || exit 1
-        echo "XXX build binutils"
         "$MAKE" -j "$MAKEJOBS" || exit 1
-        echo "XXX install binutils"
         "$MAKE" install || exit 1
     popd
 
     pushd gcc
-        "$DIR"/Tarballs/"$GCC_NAME"/configure --target="$TARGET" \
+        "$DIR"/Downloads/"$GCC_NAME"/configure --target="$TARGET" \
                                                 --prefix="$PREFIX" \
                                                 --disable-shared \
                                                 --disable-threads \
@@ -221,89 +182,19 @@ pushd "$DIR/Build/"
                                                 'CFLAGS_FOR_TARGET=-Os  -mcmodel=medlow' \
                                                 || exit 1
 
-        echo "XXX build gcc and libgcc"
         "$MAKE" -j "$MAKEJOBS" all || exit 1
-        echo "XXX install gcc and libgcc"
-        "$MAKE" -j "$MAKEJOBS" install || exit 1
-    popd
-
-    pushd ${NEWLIB_NAME}
-        export PATH="$PREFIX/bin:$PATH"
-        ./configure --target="$TARGET" \
-                                                --prefix="$PREFIX" \
-                                                || exit 1
-        echo "XXX build newlib"
-        "$MAKE" -j "$MAKEJOBS" all || exit 1
-        echo "XXX install newlib"
-        "$MAKE" install || exit 1
-    popd
-
-    rm -rf gcc/*
-
-    pushd gcc
-        "$DIR"/Tarballs/"$GCC_NAME"/configure --target=$TARGET \
-                                                --prefix="$PREFIX" \
-                                                --disable-shared \
-                                                --disable-threads \
-                                                --enable-languages=c,c++ \
-                                                --with-system-zlib \
-                                                --enable-tls \
-                                                --with-newlib \
-                                                --with-headers="$PREFIX"/$TARGET/include \
-                                                --disable-libmudflap \
-                                                --disable-libssp \
-                                                --disable-libquadmath \
-                                                --disable-libgomp \
-                                                --disable-nls \
-                                                --without-isl \
-                                                --enable-checking=yes \
-                                                --enable-multilib \
-                                                --with-abi=ilp32 \
-                                                --with-arch=rv32imcxgap9 \
-                                                'CFLAGS_FOR_TARGET=-Os  -mcmodel=medlow' \
-                                                || exit 1
-
-        echo "XXX build gcc and libgcc"
-        "$MAKE" -j "$MAKEJOBS" all || exit 1
-        echo "XXX install gcc and libgcc"
         "$MAKE" -j "$MAKEJOBS" install || exit 1
     popd
 
     pushd gtest
-        cmake "$DIR"/Tarballs/googletest-$GTEST_NAME \
+        cmake "$DIR"/Downloads/googletest-$GTEST_NAME \
                                                 -DCMAKE_INSTALL_PREFIX="$PREFIX" \
                                                 || exit 1
 
-        echo "XXX build googletest"
         "$MAKE" -j "$MAKEJOBS" || exit 1
-        echo "XXX install googletest"
         "$MAKE" install || exit 1
     popd
 
 popd
 
-cp "$DIR"/Tarballs/"$PULP_RISCV_GNU_TOOLCHAIN_NAME"/riscv.ld "$PREFIX"/riscv32-unknown-elf/lib
-
-# === DOWNLOAD OFFICIAL SDK ===
-echo "XXX install nntools requirements"
-pushd "$DIR/gap_sdk"
-
-    export GAP_RISCV_GCC_TOOLCHAIN="$PREFIX"
-    
-    source configs/ai_deck.sh
-
-    git apply ../Patches/disable_flaky_werror.patch
-
-    pip3 install -r requirements.txt
-    pip3 install -r doc/requirements.txt
-
-    git submodule update --init --recursive
-
-    echo "XXX build gap8 sdk"
-    make sdk
-
-    pushd "$DIR/gap_sdk/libs/frame_streamer"
-        make all_target
-    popd
-
-popd
+cp "$DIR"/Downloads/"$PULP_RISCV_GNU_TOOLCHAIN_NAME"/riscv.ld "$PREFIX"/riscv32-unknown-elf/lib
