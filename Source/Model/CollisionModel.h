@@ -3,7 +3,7 @@
 #include <Benchmarks.h>
 #include <Core/Device/Cluster/Cluster.h>
 #include <Core/Support/Assertions.h>
-#include <etl/vector.h>
+#include <Core/Support/etl_includes.h>
 
 namespace Model {
 

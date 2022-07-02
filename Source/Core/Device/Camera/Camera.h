@@ -3,8 +3,8 @@
 #include <Constants.h>
 #include <Core/Containers/HeapVector.h>
 #include <Core/Support/Singleton.h>
+#include <Core/Support/etl_includes.h>
 #include <Core/Support/gap_sdk.h>
-#include <etl/delegate.h>
 
 namespace Core::Device {
 

@@ -2,9 +2,9 @@
 
 #include <Core/Heap/L2Heap.h>
 #include <Core/Support/Singleton.h>
+#include <Core/Support/etl_includes.h>
 #include <Core/Support/gap_sdk.h>
 #include <Core/Sync/Sync.h>
-#include <etl/optional.h>
 
 #define MAX_BUFFER_LEN 1000
 

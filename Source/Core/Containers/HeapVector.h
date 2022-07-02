@@ -1,6 +1,6 @@
 #pragma once
 
-#include <etl/vector.h>
+#include <Core/Support/etl_includes.h>
 
 namespace Core::Containers {
 

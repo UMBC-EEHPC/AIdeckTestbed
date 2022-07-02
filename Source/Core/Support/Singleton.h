@@ -2,7 +2,7 @@
 
 #include <Core/Heap/L1Heap.h>
 #include <Core/Heap/L2Heap.h>
-#include <etl/optional.h>
+#include <Core/Support/etl_includes.h>
 
 #define SINGLETON_CLASS(sc)                \
 private:                                   \
