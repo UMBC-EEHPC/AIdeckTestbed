@@ -4,6 +4,11 @@
 using Core::Device::Cluster;
 using etl::vector_ext;
 
+extern "C" {
+AT_HYPERFLASH_FS_EXT_ADDR_TYPE volatile ptq_int8_L3_Flash = 0;
+volatile unsigned int __L3_Read, __L3_Write, __L2_Read, __L2_Write;
+}
+
 namespace Model {
 
 PI_L2 static uint8_t* original_image;
@@ -104,6 +109,3 @@ CollisionModel::~CollisionModel()
 }
 
 }
-
-extern "C" AT_HYPERFLASH_FS_EXT_ADDR_TYPE volatile ptq_int8_L3_Flash = 0;
-extern "C" volatile unsigned int __L3_Read, __L3_Write, __L2_Read, __L2_Write;

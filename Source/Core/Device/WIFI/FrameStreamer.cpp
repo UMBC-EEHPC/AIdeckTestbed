@@ -6,7 +6,7 @@ namespace Core::Device {
 
 static FrameStreamer* g_frame_streamer = nullptr;
 static pi_task_t frame_streamer_callback_task;
-static char* g_streamer_name = "FrameStreamer";
+static const char* g_streamer_name = "FrameStreamer";
 
 /*
  * Unfortunately there's no way to pass a lambda directly

@@ -81,7 +81,7 @@ void project_main()
     uart.write("+");
 #    endif // BENCHMARKING_POWER
     timer.reset_timer();
-    cm.run_model();
+    assert_gap8(cm.run_model());
     unsigned int total_time = timer.get_elapsed_time_us();
 #    ifdef BENCHMARKING_POWER
     uart.write("-");
@@ -97,7 +97,7 @@ void project_main()
 
 #if defined(BENCHMARKING_WIFI_STREAMER)
         camera.stream(camera_frame_buffer, [&]() {
-            cm.run_model();
+            assert_gap8(cm.run_model());
             assert_gap8(streamer_task = frame_streamer.send_frame_async(model_frame_buffer, [] {}));
             pi_task_wait_on(streamer_task);
         });
