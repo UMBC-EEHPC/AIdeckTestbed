@@ -36,16 +36,23 @@ GTEST_NAME="release-$GTEST_VERSION"
 GTEST_PKG="${GTEST_NAME}.tar.gz"
 GTEST_BASE_URL="https://github.com/google/googletest/archive/refs/tags"
 
-ANACONDA_VERSION="3-2020.07"
-ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-Linux-x86_64"
-ANACONDA_MD5SUM="1046c40a314ab2531e4c099741530ada"
+ANACONDA_VERSION="2021.04"
+ANACONDA_ARCH=$(uname -m)
+ANACONDA_NAME="Anaconda${ANACONDA_VERSION}-Linux-${ANACONDA_ARCH}"
+if [[ $ANACONDA_ARCH == "aarch64" ]] then
+ANACONDA_MD5SUM="14f48f5d1310478b11940a3b96eec7b6"
+else
+ANACONDA_MD5SUM="230f2c3c343ee58073bf41bd896dd76c"
+fi
 ANACONDA_PKG="${ANACONDA_NAME}.sh"
 ANACONDA_BASE_URL="https://repo.anaconda.com/archive"
+
+mkdir -p "$DIR/Downloads"
 
 pushd "$DIR/Downloads"
     if [ ! -e $PULP_RISCV_GNU_TOOLCHAIN_PKG ] ; then
         rm -rf $PULP_RISCV_GNU_TOOLCHAIN_PKG
-        git clone "$PULP_RISCV_GNU_TOOLCHAIN_BASE_URL"
+        git clone --depth=1 "$PULP_RISCV_GNU_TOOLCHAIN_BASE_URL"
         pushd "$PULP_RISCV_GNU_TOOLCHAIN_PKG"
         git checkout "$PULP_RISCV_GNU_TOOLCHAIN_CHKSUM"
         patch -p1 < "$DIR"/Patches/riscv_linker_script.patch > /dev/null
@@ -56,7 +63,7 @@ pushd "$DIR/Downloads"
 
     if [ ! -e $OPENOCD_PKG ] ; then
         rm -rf $OPENOCD_PKG
-        git clone "$OPENOCD_BASE_URL"
+        git clone --depth=1 "$OPENOCD_BASE_URL"
         pushd "$OPENOCD_PKG"
         git checkout "$OPENOCD_CHKSUM"
         popd
@@ -66,7 +73,7 @@ pushd "$DIR/Downloads"
 
     if [ ! -e $BINUTILS_PKG ] ; then
         rm -rf $BINUTILS_PKG
-        git clone "$BINUTILS_BASE_URL"
+        git clone --depth=1 "$BINUTILS_BASE_URL"
         pushd "$BINUTILS_PKG"
         git checkout "$BINUTILS_CHKSUM"
         popd
@@ -76,10 +83,10 @@ pushd "$DIR/Downloads"
 
     if [ ! -e $GCC_PKG ] ; then
         rm -rf $GCC_PKG
-        git clone "$GCC_BASE_URL"
+        git clone --depth=1 "$GCC_BASE_URL"
         pushd "$GCC_NAME"
-        git checkout "$GCC_CHKSUM
-	patch -p1 < "$DIR"/Patches/riscv-gcc.patch > /dev/null"
+        git checkout "$GCC_CHKSUM"
+	    patch -p1 < "$DIR"/Patches/riscv-gcc.patch > /dev/null
         popd
         ln -s $GCC_NAME riscv-gcc
     else
