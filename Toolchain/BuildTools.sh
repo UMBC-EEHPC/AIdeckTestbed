@@ -4,6 +4,7 @@ set -e
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 TARGET="riscv32-unknown-elf"
+BUILD_ARCH=$(uname -m)
 PREFIX="$DIR/Local"
 
 MAKE=make
@@ -37,7 +38,7 @@ GTEST_PKG="${GTEST_NAME}.tar.gz"
 GTEST_BASE_URL="https://github.com/google/googletest/archive/refs/tags"
 
 ANACONDA_VERSION="2021.04"
-ANACONDA_ARCH=$(uname -m)
+ANACONDA_ARCH=$BUILD_ARCH
 ANACONDA_NAME="Anaconda3-${ANACONDA_VERSION}-Linux-${ANACONDA_ARCH}"
 if [[ $ANACONDA_ARCH == "aarch64" ]] ; then
 ANACONDA_MD5SUM="14f48f5d1310478b11940a3b96eec7b6"
@@ -147,6 +148,7 @@ pushd "$DIR/Build/"
                                         --prefix="$PREFIX" \
                                         --datarootdir="$PREFIX"/share/gap8-openocd \
 					--disable-werror \
+                    --build=$BUILD_ARCH-unknown-linux-gnu \
                                         || exit 1
         "$MAKE" -j "$MAKEJOBS" || exit 1
         "$MAKE" install || exit 1
