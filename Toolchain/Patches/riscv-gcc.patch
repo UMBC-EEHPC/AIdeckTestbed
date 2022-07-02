@@ -1,0 +1,36 @@
+diff --git a/gcc/diagnostic.c b/gcc/diagnostic.c
+index dbaf8d6aed6..0bff2449ef0 100644
+--- a/gcc/diagnostic.c
++++ b/gcc/diagnostic.c
+@@ -849,8 +849,7 @@ diagnostic_report_diagnostic (diagnostic_context *context,
+       && diagnostic->kind == DK_WARNING)
+     diagnostic->kind = DK_ERROR;
+ 
+-  if (diagnostic->option_index
+-      && diagnostic->option_index != permissive_error_option (context))
++  if (diagnostic->option_index)
+     {
+       diagnostic_t diag_class = DK_UNSPECIFIED;
+ 
+@@ -1069,18 +1068,9 @@ diagnostic_impl (rich_location *richloc, int opt,
+ 		 va_list *ap, diagnostic_t kind)
+ {
+   diagnostic_info diagnostic;
+-  if (kind == DK_PERMERROR)
+-    {
+-      diagnostic_set_info (&diagnostic, gmsgid, ap, richloc,
+-			   permissive_error_kind (global_dc));
+-      diagnostic.option_index = permissive_error_option (global_dc);
+-    }
+-  else
+-    {
+-      diagnostic_set_info (&diagnostic, gmsgid, ap, richloc, kind);
+-      if (kind == DK_WARNING || kind == DK_PEDWARN)
+-	diagnostic.option_index = opt;
+-    }
++    diagnostic_set_info (&diagnostic, gmsgid, ap, richloc, kind);
++    if (kind == DK_WARNING || kind == DK_PEDWARN || kind == DK_PERMERROR)
++      diagnostic.option_index = opt;
+   return report_diagnostic (&diagnostic);
+ }
+ 

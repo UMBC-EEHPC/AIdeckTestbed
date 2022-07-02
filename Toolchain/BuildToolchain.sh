@@ -99,7 +99,8 @@ pushd "$DIR/Tarballs"
         rm -rf $GCC_PKG
         git clone "$GCC_BASE_URL"
         pushd "$GCC_NAME"
-        git checkout "$GCC_CHKSUM"
+        git checkout "$GCC_CHKSUM
+	patch -p1 < "$DIR"/Patches/riscv-gcc.patch > /dev/null"
         popd
         ln -s $GCC_NAME riscv-gcc
     else
