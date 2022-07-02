@@ -51,9 +51,16 @@ CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8
 {
     assert_gap8(open_model());
 
+    /*
+     * Store the image buffers somewhere that the cluster cores can access them
+     */
     original_image = frame_data.data();
     resized_image = frame_resized.data();
 
+    /*
+     * We share the same pool of RAM for both the image resizing kernel and the
+     * neural network
+     */
     Resize_L1_Memory = ptq_int8_L1_Memory;
     Resize_L2_Memory = ptq_int8_L2_Memory;
 
