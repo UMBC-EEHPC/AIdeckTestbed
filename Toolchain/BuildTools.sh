@@ -147,8 +147,8 @@ pushd "$DIR/Build/"
         ./configure --program-prefix=gap8- \
                                         --prefix="$PREFIX" \
                                         --datarootdir="$PREFIX"/share/gap8-openocd \
-					--disable-werror \
-                    --build=$BUILD_ARCH-unknown-linux-gnu \
+					                    --disable-werror \
+                                        --build=$BUILD_ARCH-unknown-linux-gnu \
                                         || exit 1
         "$MAKE" -j "$MAKEJOBS" || exit 1
         "$MAKE" install || exit 1
@@ -178,6 +178,44 @@ pushd "$DIR/Build/"
                                                 --enable-languages=c \
                                                 --with-system-zlib \
                                                 --enable-tls \
+                                                --disable-libmudflap \
+                                                --disable-libssp \
+                                                --disable-libquadmath \
+                                                --disable-libgomp \
+                                                --disable-nls \
+                                                --without-isl \
+                                                --enable-checking=yes \
+                                                --enable-multilib \
+                                                --with-abi=ilp32 \
+                                                --with-arch=rv32imcxgap9 \
+                                                'CFLAGS_FOR_TARGET=-Os  -mcmodel=medlow' \
+                                                || exit 1
+
+        "$MAKE" -j "$MAKEJOBS" all || exit 1
+        "$MAKE" -j "$MAKEJOBS" install || exit 1
+    popd
+
+    pushd ${NEWLIB_NAME}
+        export PATH="$PREFIX/bin:$PATH"
+        ./configure --target="$TARGET" \
+                                                --prefix="$PREFIX" \
+                                                || exit 1
+        "$MAKE" -j "$MAKEJOBS" all || exit 1
+        "$MAKE" install || exit 1
+    popd
+
+    rm -rf gcc/*
+
+    pushd gcc
+        "$DIR"/Tarballs/"$GCC_NAME"/configure --target=$TARGET \
+                                                --prefix="$PREFIX" \
+                                                --disable-shared \
+                                                --disable-threads \
+                                                --enable-languages=c,c++ \
+                                                --with-system-zlib \
+                                                --enable-tls \
+                                                --with-newlib \
+                                                --with-headers="$PREFIX"/$TARGET/include \
                                                 --disable-libmudflap \
                                                 --disable-libssp \
                                                 --disable-libquadmath \
