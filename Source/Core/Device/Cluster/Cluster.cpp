@@ -30,15 +30,15 @@ static Cluster* g_cluster = nullptr;
     return (m_cluster_opened = !pi_cluster_open(&m_cluster_dev));
 }
 
-[[nodiscard]] bool Cluster::submit_kernel_synchronously(Core::Support::Kernel const& kernel)
+[[nodiscard]] bool Cluster::submit_task_synchronously(void* task, void* args) const
 {
-    struct pi_cluster_task task = { 0 };
-    task.entry = reinterpret_cast<void (*)(void*)>(kernel.get_cluster_task());
-    task.arg = NULL;
-    task.stack_size = (unsigned int)STACK_SIZE;
-    task.slave_stack_size = (unsigned int)SLAVE_STACK_SIZE;
+    struct pi_cluster_task submitted_task = { 0 };
+    submitted_task.entry = task;
+    submitted_task.arg = args;
+    submitted_task.stack_size = (unsigned int)STACK_SIZE;
+    submitted_task.slave_stack_size = (unsigned int)SLAVE_STACK_SIZE;
 
-    auto status = pi_cluster_send_task_to_cl(&m_cluster_dev, &task);
+    auto status = pi_cluster_send_task_to_cl(&m_cluster_dev, &submitted_task);
 
     return !status;
 }

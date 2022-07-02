@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Core/Support/Kernel.h>
 #include <Core/Support/Singleton.h>
 #include <Core/Support/gap_sdk.h>
 
@@ -10,8 +9,8 @@ class Cluster {
     SINGLETON_CLASS(Cluster)
 public:
     [[nodiscard]] bool open_cluster();
-    [[nodiscard]] bool submit_kernel_asynchronously(Core::Support::Kernel const& kernel);
-    [[nodiscard]] bool submit_kernel_synchronously(Core::Support::Kernel const& kernel);
+    [[nodiscard]] bool submit_task_asynchronously(void* task, void* args);
+    [[nodiscard]] bool submit_task_synchronously(void* task, void* args) const;
     bool close_cluster();
 
     [[nodiscard]] bool is_cluster_open();

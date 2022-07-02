@@ -74,14 +74,14 @@ void project_main()
     printf("Initialized cluster\n");
     assert_gap8(cluster.open_cluster());
 
-    Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer);
+    Model::CollisionModel cm(camera_frame_buffer, model_frame_buffer, cluster);
 
 #ifdef BENCHMARKING_MODEL
 #    ifdef BENCHMARKING_POWER
     uart.write("+");
 #    endif // BENCHMARKING_POWER
     timer.reset_timer();
-    assert_gap8(cluster.submit_kernel_synchronously(cm));
+    cm.run_model();
     unsigned int total_time = timer.get_elapsed_time_us();
 #    ifdef BENCHMARKING_POWER
     uart.write("-");
@@ -97,7 +97,7 @@ void project_main()
 
 #if defined(BENCHMARKING_WIFI_STREAMER)
         camera.stream(camera_frame_buffer, [&]() {
-            assert_gap8(cluster.submit_kernel_synchronously(cm));
+            cm.run_model();
             assert_gap8(streamer_task = frame_streamer.send_frame_async(model_frame_buffer, [] {}));
             pi_task_wait_on(streamer_task);
         });

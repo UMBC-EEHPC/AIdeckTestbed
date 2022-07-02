@@ -1,6 +1,7 @@
 #include "CollisionModel.h"
 #include "CollisionModelGenerated.inc"
 
+using Core::Device::Cluster;
 using etl::vector_ext;
 
 namespace Model {
@@ -10,28 +11,43 @@ PI_L2 static uint8_t* resized_image;
 
 PI_L2 static int8_t output;
 
-volatile static void cluster(void* arg)
+volatile static void cluster_task(void* arg)
 {
+/*
+ * Needless to say, to collect measurements on how long an inference takes,
+ * we need to start the timer right at the beginning of the neural network's run
+ */
 #ifdef BENCHMARKING_MODEL
     gap_cl_starttimer();
     gap_cl_resethwtimer();
 #endif // BENCHMARKING_MODEL
 
+/*
+ * If the neural network expects an input image with a different size than the camera
+ * outputs, then we need to resize the input image before we actually attempt to
+ * run any inferences
+ */
 #if (CAMERA_WIDTH != MODEL_WIDTH && CAMERA_HEIGHT != MODEL_HEIGHT)
     ResizeImage(original_image, resized_image);
 #endif // (CAMERA_WIDTH != MODEL_WIDTH && CAMERA_HEIGHT != MODEL_HEIGHT)
 
+/*
+ * If we're benchmarking the model's power usage, we want to run the model in a loop
+ * to ensure that everytime the power is sampled, it's coming from the neural network,
+ * otherwise, if we're just benchmarking latency or we want to actually use the results
+ * from the neural network, we just run a single inference and exit
+ */
 #if defined(BENCHMARKING_MODEL) && defined(BENCHMARKING_POWER)
     while (true) {
-#endif // BENCHMARKING_MODEL && !defined(__PLATFORM_GVSOC__)
+#endif // defined(BENCHMARKING_MODEL) && defined(BENCHMARKING_POWER)
         ptq_int8CNN(resized_image, &output);
-#if defined(BENCHMARKING_MODEL) && !defined(__PLATFORM_GVSOC__)
+#if defined(BENCHMARKING_MODEL) && defined(BENCHMARKING_POWER)
     }
-#endif // BENCHMARKING_MODEL && !defined(BENCHMARKING_POWER)
+#endif // defined(BENCHMARKING_MODEL) && defined(BENCHMARKING_POWER)
 }
 
-CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized)
-    : Kernel(0, STACK_SIZE, SLAVE_STACK_SIZE, cluster, nullptr)
+CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8_t>& frame_resized, Cluster const& cluster)
+    : m_cluster(cluster)
 {
     assert_gap8(open_model());
 
@@ -42,6 +58,11 @@ CollisionModel::CollisionModel(vector_ext<uint8_t>& frame_data, vector_ext<uint8
     Resize_L2_Memory = ptq_int8_L2_Memory;
 
     m_is_model_open = true;
+}
+
+[[nodiscard]] bool CollisionModel::run_model()
+{
+    return m_cluster.submit_task_synchronously(cluster_task, nullptr);
 }
 
 [[nodiscard]] bool CollisionModel::open_model()
