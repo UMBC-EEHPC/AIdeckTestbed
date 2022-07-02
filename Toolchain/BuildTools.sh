@@ -146,6 +146,7 @@ popd
 mkdir -p "$PREFIX"
 mkdir -p "$DIR/Build"
 cp -R "$DIR/Downloads/${OPENOCD_NAME}" "$DIR/Build/" || true
+cp -R "$DIR/Downloads/${NEWLIB_PKG}" "$DIR/Build/" || true
 mkdir -p "$DIR/Build/binutils"
 mkdir -p "$DIR/Build/gcc"
 mkdir -p "$DIR/Build/gtest"
@@ -222,7 +223,7 @@ pushd "$DIR/Build/"
     rm -rf gcc/*
 
     pushd gcc
-        "$DIR"/Tarballs/"$GCC_NAME"/configure --target=$TARGET \
+        "$DIR"/Downloads/"$GCC_NAME"/configure --target=$TARGET \
                                                 --prefix="$PREFIX" \
                                                 --disable-shared \
                                                 --disable-threads \
