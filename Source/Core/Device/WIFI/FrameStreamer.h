@@ -15,9 +15,6 @@ public:
     pi_task_t* send_frame_async(etl::vector_ext<uint8_t>& frame_data, etl::delegate<void(void)> callback);
 
 private:
-    frame_streamer_conf m_config;
-    frame_streamer_t* m_frame_streamer_meta;
-    pi_buffer_t m_buffer;
     int m_width;
     int m_height;
 };

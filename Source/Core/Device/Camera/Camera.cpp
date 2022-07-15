@@ -40,9 +40,9 @@ void camera_c_callback(void* arg)
     uint8_t set_value = 3;
     uint8_t reg_value;
 
-    pi_camera_reg_set(&(m_camera_device), IMG_ORIENTATION, &set_value);
+    pi_camera_reg_set(&(m_camera_device), HIMAX_IMG_ORIENTATION, &set_value);
     pi_time_wait_us(1000000);
-    pi_camera_reg_get(&(m_camera_device), IMG_ORIENTATION, &reg_value);
+    pi_camera_reg_get(&(m_camera_device), HIMAX_IMG_ORIENTATION, &reg_value);
     assert_gap8(set_value == reg_value);
 
     pi_camera_control(&(m_camera_device), PI_CAMERA_CMD_STOP, 0);

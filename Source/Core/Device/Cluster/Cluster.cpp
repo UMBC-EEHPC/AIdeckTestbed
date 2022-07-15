@@ -35,7 +35,7 @@ static Cluster* g_cluster = nullptr;
     struct pi_cluster_task submitted_task = { 0 };
     submitted_task.entry = task;
     submitted_task.arg = args;
-    submitted_task.stack_size = (unsigned int)STACK_SIZE;
+    submitted_task.stack_size = (unsigned int)MAIN_APP_STACK_SIZE;
     submitted_task.slave_stack_size = (unsigned int)SLAVE_STACK_SIZE;
 
     auto status = pi_cluster_send_task_to_cl(&m_cluster_dev, &submitted_task);

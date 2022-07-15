@@ -38,3 +38,49 @@ index e37a542b..3b287615 100644
  ifdef VP_USE_SYSTEMV
  VP_COMP_CFLAGS += -D__VP_USE_SYSTEMV
  endif
+diff --git a/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/cluster/delegate/hyperbus/hyperbus_cl_internal.h b/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/cluster/delegate/hyperbus/hyperbus_cl_internal.h
+index c6a517b8..a61d33cf 100644
+--- a/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/cluster/delegate/hyperbus/hyperbus_cl_internal.h
++++ b/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/cluster/delegate/hyperbus/hyperbus_cl_internal.h
+@@ -143,7 +143,7 @@ static inline void pi_cl_hyper_copy(struct pi_device *device, uint32_t hyper_add
+                                     void *addr, uint32_t size,
+                                     int ext2loc, pi_cl_hyper_req_t *req)
+ {
+-    __pi_cl_hyper_copy(device, hyper_addr, addr, size, !ext2loc, req);
++    __pi_cl_hyper_copy(device, hyper_addr, addr, size, (udma_channel_e)!ext2loc, req);
+     hal_compiler_barrier();
+ }
+ 
+@@ -152,7 +152,7 @@ static inline void pi_cl_hyper_copy_2d(struct pi_device *device, uint32_t hyper_
+                                        uint32_t stride, uint32_t length,
+                                        int ext2loc, pi_cl_hyper_req_t *req)
+ {
+-    __pi_cl_hyper_copy_2d(device, hyper_addr, addr, size, stride, length, !ext2loc, req);
++    __pi_cl_hyper_copy_2d(device, hyper_addr, addr, size, stride, length, (udma_channel_e)!ext2loc, req);
+ }
+ 
+ static inline uint32_t pi_cl_hyperram_alloc_wait(pi_cl_hyperram_alloc_req_t *req)
+diff --git a/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/drivers/fc_event/fc_event.h b/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/drivers/fc_event/fc_event.h
+index 5918824d..46e900a7 100644
+--- a/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/drivers/fc_event/fc_event.h
++++ b/rtos/freeRTOS/vendors/gwt/gap8/pmsis/include/pmsis/implem/drivers/fc_event/fc_event.h
+@@ -33,6 +33,10 @@
+ 
+ #include "pmsis.h"
+ 
++#if defined(__cplusplus)
++extern "C" {
++#endif /* __cplusplus */
++
+ /*!
+  * @addtogroup FC_EventHandler
+  * @{
+@@ -46,7 +50,7 @@
+  * APIs
+  ******************************************************************************/
+ 
+-#define NB_SOC_EVENTS    ( SOC_EU_NB_FC_EVENTS )
++#define NB_SOC_EVENTS (SOC_EU_NB_FC_EVENTS)
+ 
+ typedef void (*pi_fc_event_handler_t)(void* arg);
+ 

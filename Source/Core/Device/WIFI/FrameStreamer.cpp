@@ -1,5 +1,7 @@
 #include "FrameStreamer.h"
 
+#if 0
+
 using namespace etl;
 
 namespace Core::Device {
@@ -71,3 +73,5 @@ pi_task_t* FrameStreamer::send_frame_async(vector_ext<uint8_t>& frame_data, dele
 }
 
 }
+
+#endif
