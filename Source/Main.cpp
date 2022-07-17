@@ -32,7 +32,7 @@ void project_main()
     printf("Initialized UART\n");
 
     uart.write("+");
-    rt_time_wait_us(1000000);
+    pi_time_wait_us(1000000);
     uart.write("-");
 #endif // BENCHMARKING_POWER
 

@@ -93,7 +93,6 @@ GAP8_Link_Flags = [
     '-mFC=1',
     '-Wl,--as-needed',
     '-Wl,--gc-sections',
-    #'-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/link.gap8_rev1.ld',
     '-T' + meson.project_source_root() / GAP_SDK_Location / 'rtos/freeRTOS/vendors/gwt/gap8/src/device/ld/GAP8.ld',
     '-nostartfiles',
     '-nostdlib',
@@ -479,8 +478,7 @@ Lib_AutoTilerKernels_GVSOC = static_library(
         '-D__PLATFORM__=ARCHI_PLATFORM_GVSOC'
     ],
     link_args: [
-        GAP8_Link_Flags,
-        #'-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
+        GAP8_Link_Flags
     ],
     override_options: [
         'warning_level=0'
@@ -522,7 +520,6 @@ Lib_FreeRTOS_Assembly_GVSOC = static_library(
     ],
     link_args: [
         GAP8_Link_Flags,
-        #'-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
     ],
     override_options: [
         'warning_level=0'
@@ -555,8 +552,7 @@ Project_GVSOC_Binary = executable(
         '-D__PLATFORM__=ARCHI_PLATFORM_GVSOC'
     ],
     link_args: [
-        GAP8_Link_Flags,
-        #'-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
+        GAP8_Link_Flags
     ],
     native: false
 )
@@ -579,8 +575,7 @@ Lib_AutoTilerKernels_AIdeck = static_library(
         '-D__PLATFORM__=ARCHI_PLATFORM_BOARD'
     ],
     link_args: [
-        GAP8_Link_Flags,
-        #'-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gapuino.conf.ld'
+        GAP8_Link_Flags
     ],
     override_options: [
         'warning_level=0'
@@ -596,7 +591,8 @@ Lib_Toolchain_AIdeck = static_library(
     include_directories: Includes,
     c_args: [
         GAP8_C_Flags,
-        '-D__PLATFORM_BOARD__'
+        '-D__PLATFORM_BOARD__',
+        '-D__PLATFORM__=ARCHI_PLATFORM_BOARD'
     ],
     link_args: [
         GAP8_Link_Flags
@@ -616,11 +612,11 @@ Lib_FreeRTOS_Assembly_AIdeck = static_library(
     c_args: [
         GAP8_C_Flags,
         '-D__PLATFORM_BOARD__',
+        '-D__PLATFORM__=ARCHI_PLATFORM_BOARD',
         '-DASSEMBLY_LANGUAGE'
     ],
     link_args: [
-        GAP8_Link_Flags,
-        #'-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gvsoc.conf.ld'
+        GAP8_Link_Flags
     ],
     override_options: [
         'warning_level=0'
@@ -653,8 +649,7 @@ Project_AIdeck_Binary = executable(
         '-D__PLATFORM__=ARCHI_PLATFORM_BOARD'
     ],
     link_args: [
-        GAP8_Link_Flags,
-        #'-T' + meson.project_source_root() / GAP_SDK_Location / 'install/workstation/ld/gapuino.conf.ld'
+        GAP8_Link_Flags
     ],
     native: false
 )
